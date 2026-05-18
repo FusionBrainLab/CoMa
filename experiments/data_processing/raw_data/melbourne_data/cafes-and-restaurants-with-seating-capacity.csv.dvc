@@ -1,0 +1,5 @@
+outs:
+- md5: c871ca9d3acdd90507088c7a400dc626
+  size: 16300256
+  hash: md5
+  path: cafes-and-restaurants-with-seating-capacity.csv

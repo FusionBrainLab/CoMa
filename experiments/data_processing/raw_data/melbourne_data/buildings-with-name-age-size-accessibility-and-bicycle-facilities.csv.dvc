@@ -1,0 +1,5 @@
+outs:
+- md5: fe1c38b61366930480bf21efdfa5a83a
+  size: 77090370
+  hash: md5
+  path: buildings-with-name-age-size-accessibility-and-bicycle-facilities.csv

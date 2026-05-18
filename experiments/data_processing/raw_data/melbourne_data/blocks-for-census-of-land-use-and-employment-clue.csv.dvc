@@ -1,0 +1,5 @@
+outs:
+- md5: 8f501ee8fd6d79f56bbecbd03e4f33cc
+  size: 332202
+  hash: md5
+  path: blocks-for-census-of-land-use-and-employment-clue.csv

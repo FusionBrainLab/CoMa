@@ -1,0 +1,5 @@
+outs:
+- md5: bedb656ea5ceffed71f84411aff85a7e
+  size: 69134
+  hash: md5
+  path: small-areas-for-census-of-land-use-and-employment-clue.csv

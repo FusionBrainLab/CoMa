@@ -1,0 +1,5 @@
+outs:
+- md5: 22374f38e0eef5d6fa770914d86979c2
+  size: 1438873
+  hash: md5
+  path: floor-space-by-block-by-clue-industry.csv

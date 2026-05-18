@@ -1,0 +1,5 @@
+outs:
+- md5: ae76f123f83248f21240346eb64e5f45
+  size: 1089967
+  hash: md5
+  path: bars-and-pubs-with-patron-capacity.csv

@@ -1,0 +1,46 @@
+{
+    "type":"FunctionGraph",
+    "functions":[
+        {
+            "type":"FunctionWrapper",
+            "function":{
+                "type":"PeftModelMerger",
+                "base_model_creator":{
+                    "type":"DCPModelLoader",
+                    "base_model_creator":{
+                        "type":"LoRAModelCreator",
+                        "base_model_creator":{
+                            "type":"HFModelCreator",
+                            "model_cls":"Qwen3VLForConditionalGeneration",
+                            "model_args":{
+                                "pretrained_model_name_or_path":"Qwen/Qwen3-VL-2B-Instruct",
+                                "text_config":{
+                                    "use_cache":false
+                                }
+                            }
+                        },
+                        "lora_config":{
+                            "target_modules":["q_proj", "k_proj", "v_proj", "qkv"]
+                        }
+                    },
+                    "path":"/workspace-SR008.fs2/maslov/massing_generation/experiments/training/071125_system_prompt_train/2B/checkpoints/step_200/model"
+                }
+            },
+            "output_parser":{
+                "type":"AnyToDictParser",
+                "key":"model"
+            }
+        },
+        {
+            "type":"FunctionWrapper",
+            "function":{
+                "type":"HFModelPusher",
+                "path":"evgmaslov/Qwen3-VL-2B-Instruct-CoMa"
+            },
+            "input_parser":{
+                "type":"DictToDictParser",
+                "keys_mapping":{"model": "model"}
+            }
+        }
+    ]
+}

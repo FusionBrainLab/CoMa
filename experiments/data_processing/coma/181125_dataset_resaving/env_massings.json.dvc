@@ -1,0 +1,5 @@
+outs:
+- md5: ad381527fb4f7ef3b364359ddc6fa942
+  size: 28470590
+  hash: md5
+  path: env_massings.json

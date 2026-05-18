@@ -1,0 +1,36 @@
+\section{Method}
+
+\begin{table*}[t]
+    \caption{Quantitative Results. Performance comparison of fine-tuned and zero-shot models across key metrics.}
+    \label{tab:metrics}
+    \centering
+    \begin{tabular}{p{4cm} wc{1.2cm} wc{1.2cm} wc{1.2cm} wc{1.2cm} wc{1.2cm} wc{1.2cm} wc{2cm}}
+        \toprule
+         & \thead{Pattern \\ Match}$\uparrow$ & \thead{JSON \\ Validity}$\uparrow$ & \thead{ID \\ IoU}$\uparrow$ & \thead{Floor \\ Error}$\downarrow$ & \thead{Area \\ Error}$\downarrow$ & \thead{Site \\ IoU}$\uparrow$ & \thead{Contextual \\ Relevance}$\uparrow$ \\
+        \midrule
+        CoMa-2B & 0.84 & 0.63 & 0.46 & 0.76 & 1.30 & 0.01 & 0.15 \\
+        CoMa-4B & 0.95 & 0.72 & 0.71 & 0.49 & 2.86 & 0.03 & 0.18 \\
+        CoMa-8B & 0.94 & 0.79 & 0.75 & 0.42 & 1.90 & 0.05 & 0.24 \\
+        \midrule
+        Qwen3-VL-235B-Instruct & \textbf{1.00} & \textbf{0.99} & \textbf{0.99} & \textbf{0.12} & \textbf{0.79} & \textbf{0.10} & \textbf{0.25} \\
+        \bottomrule
+    \end{tabular}
+  \end{table*}
+
+We frame the problem of building massing generation as a conditional vision-language task. The objective is to generate a 3D massing model conditioned on a textual description of its functional-economical requirements, development site contour, and its urban visual context.
+
+\subsection{Finetuned VLM Approach}
+We fine-tune the Qwen3-VL series \cite{Qwen-VL} of Vision Language Models on our CoMa-20K dataset. The model input is a concatenated prompt consisting of the site's \texttt{requirements} formatted as a text string, the \texttt{site\_contour} coordinates, and a contextual image (\texttt{env\_render\_high}). The training objective is to autoregressively generate the tokenized 3D massing geometry. We experiment with three model variants (2B, 4B, and 8B parameters) to study the scalability of this approach.
+
+\subsection{Zero-shot VLM Approach}
+To benchmark the inherent capability of large VLMs on this task, we employ \textit{Qwen3-VL-235B-A22B-Instruct} \cite{huggingface} in a zero-shot setting. The model is prompted with detailed architectural rules and spatial logic constraints, including:
+
+\begin{itemize}
+    \item \textbf{Spatial Logic:} Strict adherence to site boundaries, coordinate system consistency, and geometric containment
+    \item \textbf{Placement Logic:} Footprint area estimation, orientation parallel to site contours, and minimum buffer zones
+    \item \textbf{Geometric Articulation:} Avoidance of simple rectangles through L/U-shaped plans, step-backs, and varied roof heights
+    \item \textbf{Structural Constraints:} Proper elevation calculations based on floor counts and heights
+\end{itemize}
+
+The prompt explicitly defines the input-output format and emphasizes outputting only structured JSON geometry, enabling direct comparison with our fine-tuned approaches while leveraging the model's pre-trained capabilities.
+

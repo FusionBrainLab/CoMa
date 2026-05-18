@@ -1,0 +1,5 @@
+outs:
+- md5: b6c8fa2e21e597de09b4a736b0dee307
+  size: 152010
+  hash: md5
+  path: self-guided-walks.csv

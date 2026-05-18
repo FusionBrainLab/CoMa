@@ -1,0 +1,5 @@
+outs:
+- md5: 09a7f1cb7ed8ff4a0db7027fc47a2d6d
+  size: 1541288241
+  hash: md5
+  path: env_image.zip

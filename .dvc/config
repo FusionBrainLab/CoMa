@@ -1,0 +1,8 @@
+[core]
+    remote = storage
+[cache]
+    type = copy
+['remote "storage"']
+    url = s3://airi-generative-design/massing_generation/
+    endpointurl = https://s3.cloud.ru
+    region = ru-central-1

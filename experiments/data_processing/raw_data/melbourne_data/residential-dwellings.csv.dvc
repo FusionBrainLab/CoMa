@@ -1,0 +1,5 @@
+outs:
+- md5: 0896642487e9febabe104c8806b47ae2
+  size: 34936417
+  hash: md5
+  path: residential-dwellings.csv

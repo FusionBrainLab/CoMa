@@ -1,0 +1,5 @@
+outs:
+- md5: dfd17a9d22e8d28763967e2ea99630b7
+  size: 122944630
+  hash: md5
+  path: road-segments-with-surface-type.csv

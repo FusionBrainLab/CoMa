@@ -1,0 +1,5 @@
+outs:
+- md5: 86c124b87ed60e2918734e8e9efad499
+  size: 24338284
+  hash: md5
+  path: 2023-building-footprints.csv

@@ -1,0 +1,11 @@
+{
+    "Qwen3-VL-235B-A22B-Instruct": {
+        "OutputPatternMatch": 1.0, 
+        "ValidJsonAccuracy": 0.9964485032978183, 
+        "IdIoU": 0.9930777900717017, 
+        "FloorCountError": 0.12032152498185092, 
+        "UsableAreaError": 0.7930649570336221, 
+        "SiteError": 0.10254499563060475, 
+        "ContextualRelevance": 0.24518201284796573
+    }
+}

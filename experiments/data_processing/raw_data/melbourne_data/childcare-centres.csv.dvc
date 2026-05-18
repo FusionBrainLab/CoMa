@@ -1,0 +1,5 @@
+outs:
+- md5: 3221779202c3f265e1b05e9a3cb52477
+  size: 3159
+  hash: md5
+  path: childcare-centres.csv

@@ -1,0 +1,11 @@
+{
+    "Qwen3-VL-4B-Instruct-CoMa": {
+        "OutputPatternMatch": 0.9225512528473804,
+        "ValidJsonAccuracy": 0.8177676537585421,
+        "IdIoU": 0.8109972158947102,
+        "FloorCountError": 0.27710794034256603,
+        "UsableAreaError": 1.2728521742671324,
+        "SiteError": 0.10924556674868476,
+        "ContextualRelevance": 0.2589147286821705
+    }
+}
