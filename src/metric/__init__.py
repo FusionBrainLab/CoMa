@@ -6,3 +6,4 @@ from .agent_indicator_accuracy import *
 from .filter_metric import *
 from .safe_ignore_sample_merging import *
 from .safe_preprocess_ignore_sample_merging import *
+from .sample_metric_roc_auc import *
