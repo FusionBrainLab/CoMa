@@ -9,3 +9,5 @@ from .inversed_json_chunk_preprocess_dataset_loader import *
 from .memory_dataset_loader import *
 from .osm_buildings_creator import *
 from .osm_regions_creator import *
+from .coma_regions_creator import *
+from .coma_buildings_creator import *
