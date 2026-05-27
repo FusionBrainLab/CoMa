@@ -52,34 +52,40 @@ class FocusMeshVisualizer(ImageDataVisualizer):
                 (np.max(focus_vertices[:, 2]) + np.min(focus_vertices[:, 2]))/2
             ])
 
-            plotter = pv.Plotter(off_screen=True)
-            plotter.add_mesh(
-                focus_mesh, 
-                color=self.focus_mesh_color, 
-                opacity=1,
-                show_edges=False
+            plotter = pv.Plotter(
+                off_screen=True,
+                window_size=self.window_size
             )
-            plotter.add_mesh(
-                context_mesh, 
-                color=self.context_mesh_color, 
-                opacity=1,
-                show_edges=False
-            )
-            plotter.reset_camera()
+            try:
+                plotter.add_mesh(
+                    focus_mesh,
+                    color=self.focus_mesh_color,
+                    opacity=1,
+                    show_edges=False
+                )
+                plotter.add_mesh(
+                    context_mesh,
+                    color=self.context_mesh_color,
+                    opacity=1,
+                    show_edges=False
+                )
+                plotter.reset_camera()
 
-            custom_camera_position = (
-                (
-                    focus_center[0] + radius*math.cos(math.radians(self.angle)),
-                    focus_center[1] + radius*math.sin(math.radians(self.angle)),
-                    focus_center[2] + radius*math.sin(math.radians(self.vertical_angle))
-                ), 
-                focus_center, 
-                (0.0, 0, 1)
-            )
-            
-            plotter.camera_position = custom_camera_position
-            image = plotter.screenshot(return_img=True)
+                custom_camera_position = (
+                    (
+                        focus_center[0] + radius*math.cos(math.radians(self.angle)),
+                        focus_center[1] + radius*math.sin(math.radians(self.angle)),
+                        focus_center[2] + radius*math.sin(math.radians(self.vertical_angle))
+                    ),
+                    focus_center,
+                    (0.0, 0, 1)
+                )
 
-            np_image = np.array(image)
-            image = Image.fromarray(np_image)
-            return image
+                plotter.camera_position = custom_camera_position
+                image = plotter.screenshot(return_img=True)
+
+                np_image = np.array(image)
+                image = Image.fromarray(np_image)
+                return image
+            finally:
+                plotter.close()

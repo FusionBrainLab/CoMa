@@ -2,6 +2,8 @@ from typing import Any, Dict, List
 
 import pandas as pd
 import geopandas as gpd
+from tqdm import tqdm
+import numpy as np
 
 from .dataset_merger import DatasetMerger
 

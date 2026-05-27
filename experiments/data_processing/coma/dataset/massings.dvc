@@ -1,0 +1,6 @@
+outs:
+- md5: db54342a6d778430ebab3becce4323c9.dir
+  size: 98915406
+  nfiles: 2
+  hash: md5
+  path: massings

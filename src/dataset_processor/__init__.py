@@ -19,5 +19,5 @@ from .shuffle_processor import *
 from .point_radius_self_joiner import *
 from .geojson_to_shapely_processor import *
 from .geo_project_processor import *
-from .footprints_to_massings_processor import *
+from .footprints_to_building_processor import *
 from .features_uniformize_processor import *

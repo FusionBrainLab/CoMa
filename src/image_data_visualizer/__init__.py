@@ -7,3 +7,4 @@ from .seaborn_barplot_creator import *
 from .seaborn_distribution_visualizer import *
 from .contextual_mesh_visualizer import *
 from .floor_separated_massing_mesh_visualizer import *
+from .map_region_visualizer import *

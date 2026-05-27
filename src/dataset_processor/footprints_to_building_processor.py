@@ -5,7 +5,7 @@ import pandas as pd
 from .dataset_processor import DatasetProcessor
 from ..shapely_to_polygons_converter import ShapelyToPolygonsConverter
 
-class FootprintsToMassingsProcessor(DatasetProcessor):
+class FootprintsToBuildingProcessor(DatasetProcessor):
     def __init__(self, *, polygons_col: str,
                         bottom_elevation_col: str,
                         top_elevation_col: str,
