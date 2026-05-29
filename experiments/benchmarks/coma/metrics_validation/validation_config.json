@@ -155,6 +155,143 @@
                 "context_reduction":"mean"
             },
             "gt_label_key":"is_real"
+        },
+        "FARMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":["site_contour"],
+                "massing_metric":{
+                    "type":"MassingFloorAreaRatio",
+                    "massing_key":"massing",
+                    "site_key":"site_contour",
+                    "floor_height":3.0
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
+        },
+        "CoverageMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":["site_contour"],
+                "massing_metric":{
+                    "type":"MassingCoverage",
+                    "massing_key":"massing",
+                    "site_key":"site_contour"
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
+        },
+        "SetbackMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":["site_contour"],
+                "massing_metric":{
+                    "type":"MassingSetback",
+                    "massing_key":"massing",
+                    "site_key":"site_contour",
+                    "reduction":"mean"
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
+        },
+        "ElongationMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":[],
+                "massing_metric":{
+                    "type":"MassingElongation",
+                    "massing_key":"massing"
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
+        },
+        "CourtyardRatioMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":[],
+                "massing_metric":{
+                    "type":"MassingCourtyardRatio",
+                    "massing_key":"massing"
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
+        },
+        "StepbackRatioMatch":{
+            "type":"SampleMetricROCAUC",
+            "sample_metric":{
+                "type":"MassingContextualRelevance",
+                "massing_key":"massing",
+                "context_key":"context",
+                "additional_features":[],
+                "massing_metric":{
+                    "type":"MassingStepbackRatio",
+                    "massing_key":"massing"
+                },
+                "id_key":"id",
+                "context_dataset_loader":{
+                    "type":"InversedJsonChunkDatasetLoader",
+                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset",
+                    "name_pattern":".*",
+                    "verbose": true
+                },
+                "context_reduction":"mean"
+            },
+            "gt_label_key":"is_real"
         }
     },
     "eval_configs":[
@@ -182,6 +319,36 @@
             "type":"EvalConfig",
             "method_name":"negative_sampling_testset",
             "metric_name":"BuildingsCountMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"FARMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"CoverageMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"SetbackMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"ElongationMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"CourtyardRatioMatch"
+        },
+        {
+            "type":"EvalConfig",
+            "method_name":"negative_sampling_testset",
+            "metric_name":"StepbackRatioMatch"
         }
     ],
     "result_storage_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/metrics_validation/result.json"
