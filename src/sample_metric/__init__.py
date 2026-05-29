@@ -71,3 +71,9 @@ from .requirements_id_count import *
 from .site_polygon_metric import *
 from .site_requirements_area_complexity import *
 from .massing_contextual_relevance import *
+from .massing_floor_area_ratio import *
+from .massing_coverage import *
+from .massing_setback import *
+from .massing_elongation import *
+from .massing_courtyard_ratio import *
+from .massing_stepback_ratio import *
