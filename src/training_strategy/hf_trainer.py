@@ -1,3 +1,4 @@
+import os
 from typing import Optional, TypedDict, Dict, Any, List
 from functools import partial
 
@@ -41,6 +42,10 @@ class HFTrainer(TrainingStrategy):
         train_dataset = DictDataset(dict_dataset=train_dataset)
         
         processing_class = self.processor_creator() if self.processor_creator != None else None
+        # transformers>=5.5: TensorBoardCallback reads TENSORBOARD_LOGGING_DIR, not TrainingArguments.logging_dir
+        logging_dir = self.init_args.get("logging_dir")
+        if logging_dir is not None:
+            os.environ["TENSORBOARD_LOGGING_DIR"] = os.path.expanduser(logging_dir)
         args = TrainingArguments(**self.init_args)
 
         def collate_fn(instances: List[Dict[str, Any]]) -> Dict[str, Any]:

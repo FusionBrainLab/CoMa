@@ -1,0 +1,186 @@
+_target_: src.dataset_processor.FunctionProcessor
+function:
+  _target_: src.core.function_utils.FunctionWrapper
+  function:
+    _target_: src.dict_to_memory_parser.ConcatDTMParser
+    base_parsers:
+      - _target_: src.dict_to_memory_parser.EmptyColAdaptiveDTMParser
+        combination_to_cols:
+          "1": ["1d_context"]
+          "2": ["2d_context"]
+          "3": ["3d_context"]
+          "1_2": ["1d_context", "2d_context"]
+          "1_3": ["1d_context", "3d_context"]
+          "2_3": ["2d_context", "3d_context"]
+          "1_2_3": ["1d_context", "2d_context", "3d_context"]
+        combination_to_parser:
+          "1":
+            _target_: src.dict_to_memory_parser.ContentChainDTMParser
+            role: "user"
+            content_makers:
+              - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: the site contour and nearby buildings as JSON massings in the same geometry style.\nReturn the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                args_mapping:
+                  "site_contour": "site_contour"
+                  "1d_context": "1d_context"
+                modality: "text"
+          "2":
+            _target_: src.dict_to_memory_parser.ContentChainDTMParser
+            role: "user"
+            content_makers:
+              - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: a 2D map image follows. The red area in the center marks the development site."
+                args_mapping: {}
+                modality: "text"
+              - _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                modality: "image"
+                key: "2d_context"
+              - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Use the 2D context image and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                args_mapping:
+                  "site_contour": "site_contour"
+                modality: "text"
+          "3":
+            _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+            role: "user"
+            content_makers:
+              "definition":
+                _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: 3D views follow. Gray objects are surrounding buildings; the red area marks the development site. Multiple views show the same site from different sides."
+                args_mapping: {}
+                modality: "text"
+              "image":
+                _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                modality: "image"
+                key: "3d_context"
+              "site":
+                _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Use the 3D context views and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                args_mapping:
+                  "site_contour": "site_contour"
+                modality: "text"
+            content_order: ["definition", "image", "site"]
+            content_key_to_col:
+              "image": "3d_context"
+          "1_2":
+            _target_: src.dict_to_memory_parser.ContentChainDTMParser
+            role: "user"
+            content_makers:
+              - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: a 2D map image follows. The red area in the center marks the development site."
+                args_mapping: {}
+                modality: "text"
+              - _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                modality: "image"
+                key: "2d_context"
+              - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Use the 2D context image, the site contour, and nearby buildings given as JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                args_mapping:
+                  "site_contour": "site_contour"
+                  "1d_context": "1d_context"
+                modality: "text"
+          "1_3":
+            _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+            role: "user"
+            content_makers:
+              "definition":
+                _target_: src.dict_to_content_parser.StringFormatDTCParser
+                template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: 3D views follow. Gray objects are surrounding buildings; the red area marks the development site. Multiple views show the same site from different sides."
+                args_mapping: {}
+                modality: "text"
+              "mesh_image":
+                  _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                  modality: "image"
+                  key: "3d_context"
+              "site":
+                  _target_: src.dict_to_content_parser.StringFormatDTCParser
+                  template: "Use the 3D context views, the site contour, and nearby buildings given as JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                  args_mapping:
+                    "site_contour": "site_contour"
+                    "1d_context": "1d_context"
+                  modality: "text"
+            content_order: ["definition", "mesh_image", "site"]
+            content_key_to_col:
+              "mesh_image": "3d_context"
+          "2_3":
+            _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+            role: "user"
+            content_makers:
+              "definition":
+                  _target_: src.dict_to_content_parser.StringFormatDTCParser
+                  template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: first a 2D map image, then 3D context views. In the 2D image, the red area marks the site. In 3D views, gray objects are surrounding buildings and the red area marks the site."
+                  args_mapping: {}
+                  modality: "text"
+              "mesh_image":
+                  _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                  modality: "image"
+                  key: "3d_context"
+              "map_image":
+                  _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                  modality: "image"
+                  key: "2d_context"
+              "site":
+                  _target_: src.dict_to_content_parser.StringFormatDTCParser
+                  template: "Use the 2D map, 3D context views, and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                  args_mapping:
+                    "site_contour": "site_contour"
+                  modality: "text"
+            content_order: ["definition", "map_image", "mesh_image", "site"]
+            content_key_to_col:
+              "mesh_image": "3d_context"
+              "map_image": "2d_context"
+          "1_2_3":
+            _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+            role: "user"
+            content_makers:
+              "definition":
+                  _target_: src.dict_to_content_parser.StringFormatDTCParser
+                  template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: first a 2D map image, then 3D context views, plus nearby buildings as JSON massings. In images, the red area marks the development site; gray 3D objects are surrounding buildings."
+                  args_mapping: {}
+                  modality: "text"
+              "mesh_image":
+                  _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                  modality: "image"
+                  key: "3d_context"
+              "map_image":
+                  _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                  modality: "image"
+                  key: "2d_context"
+              "site":
+                  _target_: src.dict_to_content_parser.StringFormatDTCParser
+                  template: "Use all provided context, the site contour, and nearby building JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                  args_mapping:
+                    "site_contour": "site_contour"
+                    "1d_context": "1d_context"
+                  modality: "text"
+            content_order: ["definition", "map_image", "mesh_image", "site"]
+            content_key_to_col:
+              "mesh_image": "3d_context"
+              "map_image": "2d_context"
+        empty_parser:
+          _target_: src.dict_to_memory_parser.ContentChainDTMParser
+          role: "user"
+          content_makers:
+            - _target_: src.dict_to_content_parser.StringFormatDTCParser
+              template: "Generate building massing geometry inside the development site contour.\nInput: the site contour is given below.\nReturn the massing as JSON.\n\nSite contour:\n{site_contour}"
+              args_mapping:
+                "site_contour": "site_contour"
+              modality: "text"
+      - _target_: src.dict_to_memory_parser.ContentChainDTMParser
+        role: "assistant"
+        content_makers:
+          - _target_: src.dict_to_content_parser.StringFormatDTCParser
+            template: "**Massing**\n\n```json\n{massing}\n```"
+            args_mapping:
+              "massing": "massing"
+            modality: "text"
+  input_parser:
+    _target_: src.core.parsers.AnyToDictParser
+    key: "dictionary"
+cols_to_args_mapping:
+  "site_contour": "site_contour"
+  "massing": "massing"
+  "1d_context": "1d_context"
+  "3d_context": "3d_context"
+  "2d_context": "2d_context"
+output_key: "memories"

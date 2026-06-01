@@ -58,7 +58,7 @@ def main():
     261025_images_rendering
     271025_final_data_processing
     """
-    #----------CREATE BUILDINGS----------
+    """#----------CREATE BUILDINGS----------
     print("----------CREATE BUILDINGS----------")
 
     buildings_creator = CoMaBuildingsCreator(
@@ -98,12 +98,23 @@ def main():
     )
     massings = massings_creator(datasets={"buildings":buildings, "regions":regions})
 
+    pd_massings = pd.DataFrame(massings)
+    base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images"
+    def filter_dataset(row):
+        if not os.path.exists(os.path.join(base_folder, "mesh_images", row["id"])):
+            return False
+        if not os.path.exists(os.path.join(base_folder, "map_images", f"{row['id']}.png")):
+            return False
+        return True
+    pd_massings = pd_massings[pd_massings.progress_apply(filter_dataset, axis=1)]
+    massings = pd_massings.to_dict("list")
+
     saver = InversedJsonChunkDatasetSaver(
         folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
         chunk_length=10000
     )
     saver(dataset=massings)
-    return
+    return"""
 
     loader = InversedJsonChunkDatasetLoader(
         folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
@@ -111,6 +122,24 @@ def main():
         verbose=True
     )
     massings = loader()
+
+    pd_massings = pd.DataFrame(massings)
+    base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images"
+    def filter_dataset(row):
+        if not os.path.exists(os.path.join(base_folder, "mesh_images", row["id"])):
+            return False
+        if not os.path.exists(os.path.join(base_folder, "map_images", f"{row['id']}.png")):
+            return False
+        return True
+    pd_massings = pd_massings[pd_massings.progress_apply(filter_dataset, axis=1)]
+    massings = pd_massings.to_dict("list")
+
+    saver = InversedJsonChunkDatasetSaver(
+        folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
+        chunk_length=10000
+    )
+    saver(dataset=massings)
+    return
 
     #----------CREATE IMAGE CONTEXT----------
     print("----------CREATE IMAGE CONTEXT----------")

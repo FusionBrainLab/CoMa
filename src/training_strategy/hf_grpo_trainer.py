@@ -5,7 +5,6 @@ from torch import nn
 from transformers import Trainer
 import torch
 from transformers.training_args import TrainingArguments 
-from trl import GRPOTrainer, GRPOConfig
 
 from .training_strategy import TrainingStrategy
 from ..dataset_creator import DatasetCreator
@@ -31,6 +30,8 @@ class HFGRPOTrainer(TrainingStrategy):
         self.reward_functions = reward_functions
 
     def __call__(self, *, model: nn.Module) -> nn.Module:
+        from trl import GRPOTrainer, GRPOConfig
+
         if self.enable_input_require_grads:
             model.enable_input_require_grads()
 

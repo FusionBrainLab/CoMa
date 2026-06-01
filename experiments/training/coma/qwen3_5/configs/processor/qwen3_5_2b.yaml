@@ -1,0 +1,10 @@
+_target_: src.memory_tokenizer.HFProcessor
+processor_name: "Qwen/Qwen3.5-2B"
+processor_kwargs:
+  add_generation_prompt: false
+  enable_thinking: false
+  processor_kwargs:
+    padding: "longest"
+    max_length: 32000
+images_size: [512, 512]
+processor_parameter_updates: []
