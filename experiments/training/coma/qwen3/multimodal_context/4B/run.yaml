@@ -1,0 +1,24 @@
+
+# 🤝 Пример запуска:
+# mls job submit --config ./binary.yaml
+#
+# 📚 Документация по запуску задач: https://fbdocs.website.yandexcloud.net/pages/mlspace/jobs/quick_start.html
+
+job:
+  description: "#evgmaslov #coma #multimodal_context #4B"
+  environment:
+    image: cr.ai.cloud.ru/aicloud-base-images/py3.12-torch2.7.0:0.0.41
+    variables:
+      HF_HOME: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/transformers_cache"
+      MASTER_ADDR: "127.0.0.1"
+      MASTER_PORT: "29501"
+      PYTHONUNBUFFERED: "1"
+  resource:
+    instance_type: a100plus.8gpu.80vG.96C.1456G
+    # processes: - # Сколько процессов запускать. По умолчанию запускается по количеству GPU на одном воркере - это подходит для torchrun.
+    processes: 1 # Для работы с accelerate нужно запускать 1 процесс на 1 воркер.
+    workers: 1   # Сколько запускать воркеров запускать
+  script: '/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/massing_generation/bin/torchrun --nproc-per-node 8 --master_addr 127.0.0.1 --master_port 29501 /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/hydra_run.py --config_path /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/multimodal_context/4B/config.yaml'
+  type: binary
+
+

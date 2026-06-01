@@ -1,0 +1,86 @@
+defaults:
+  - _self_
+
+method:
+ _target_: src.core.function_utils.FunctionGraph
+ _convert_: all
+ functions:
+  - ${model}
+  - _target_: src.core.function_utils.FunctionWrapper
+    function:
+      _target_: src.training_strategy.HFTrainer
+      use_cache: false
+      enable_input_require_grads: true
+      resume_from_checkpoint: false
+      processor_creator: ${tokenizer_creator}
+      train_dataset_creator:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/splits/train"
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - ${context_sampler}
+            - _target_: src.dataset_processor.JsonStringDumper
+              cols:
+                - "site_contour"
+                - "massing"
+                - "1d_context"
+            - ${memory_creator}
+            - _target_: src.dataset_processor.ModalityEstimationTokensCountFilter
+              memory_col: "memories"
+              memory_tokenizer: ${processor}
+              ids_key: "input_ids"
+              max_tokens: 32000
+              modality_estimations:
+                image: 256
+              parallelize: 16
+            - _target_: src.dataset_processor.ShuffleProcessor
+              random_seed: 42
+      data_collator:
+        _target_: src.data_collator.PostprocessCollator
+        base_collator:
+          _target_: src.data_collator.MemoryTokenizerCollator
+          memories_col: "memories"
+          memory_tokenizer: ${processor}
+        postprocessor:
+          _target_: src.tensor_batch_processor.CompositionTensorProcessor
+          base_processors:
+            - _target_: src.tensor_batch_processor.LabelsExtractor
+              input_ids_key: "input_ids"
+              start_token_id: 248045
+              end_token_id: 248046
+              ignore_index: -100
+      init_args:
+        bf16: true
+        output_dir: ${training.output_dir}
+        num_train_epochs: 1
+        per_device_train_batch_size: 1
+        per_device_eval_batch_size: 1
+        gradient_accumulation_steps: 128
+        eval_strategy: "no"
+        save_strategy: "steps"
+        save_steps: 1000
+        save_total_limit: 1
+        learning_rate: 1e-5
+        weight_decay: 0
+        warmup_ratio: 0.03
+        max_grad_norm: 1
+        lr_scheduler_type: "cosine"
+        logging_steps: 1
+        gradient_checkpointing: true
+        report_to: "tensorboard"
+        logging_dir: ${training.logging_dir}
+        remove_unused_columns: false
+        dataloader_pin_memory: false
+        use_liger_kernel: true
+        liger_kernel_config:
+          fused_linear_cross_entropy: true
+        include_num_input_tokens_seen: true
+    input_parser:
+     _target_: src.core.parsers.DictToDictParser
+     keys_mapping:
+      model: "model"

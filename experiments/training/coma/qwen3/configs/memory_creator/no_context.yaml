@@ -1,0 +1,29 @@
+_target_: src.dataset_processor.FunctionProcessor
+function:
+  _target_: src.core.function_utils.FunctionWrapper
+  function:
+    _target_: src.dict_to_memory_parser.ConcatDTMParser
+    base_parsers:
+      - _target_: src.dict_to_memory_parser.ContentChainDTMParser
+        role: "user"
+        content_makers:
+          - _target_: src.dict_to_content_parser.StringFormatDTCParser
+            template: "Generate building massing geometry inside the development site contour.\nInput: the site contour is given below.\nReturn the massing as JSON.\n\nSite contour:\n{site_contour}"
+            args_mapping:
+              "site_contour": "site_contour"
+            modality: "text"
+      - _target_: src.dict_to_memory_parser.ContentChainDTMParser
+        role: "assistant"
+        content_makers:
+          - _target_: src.dict_to_content_parser.StringFormatDTCParser
+            template: "**Massing**\n\n```json\n{massing}\n```"
+            args_mapping:
+              "massing": "massing"
+            modality: "text"
+  input_parser:
+    _target_: src.core.parsers.AnyToDictParser
+    key: "dictionary"
+cols_to_args_mapping:
+  "site_contour": "site_contour"
+  "massing": "massing"
+output_key: "memories"

@@ -1,0 +1,21 @@
+_target_: src.core.function_utils.FunctionWrapper
+function:
+  _target_: src.model_creator.LoRAModelCreator
+  base_model_creator:
+    _target_: src.model_creator.HFModelCreator
+    model_cls: "Qwen3VLForConditionalGeneration"
+    model_args: {
+      "pretrained_model_name_or_path": "Qwen/Qwen3-VL-8B-Instruct",
+      "dtype": bfloat16,
+      "attn_implementation": "flash_attention_2"
+    }
+  lora_config:
+    r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    bias: "none"
+    task_type: "CAUSAL_LM"
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+output_parser:
+  _target_: src.core.parsers.AnyToDictParser
+  key: "model"

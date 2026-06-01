@@ -14,6 +14,6 @@ class JsonStringDumper(DatasetProcessor):
         df = pd.DataFrame(dataset)
         tqdm.pandas()
         for col in self.cols:
-            df[col] = df.progress_apply(lambda row: json.dumps(row[col], ensure_ascii=False), axis=1)
+            df[col] = df.progress_apply(lambda row: None if row[col] is None else json.dumps(row[col], ensure_ascii=False), axis=1)
         new_dataset = df.to_dict("list")
         return new_dataset

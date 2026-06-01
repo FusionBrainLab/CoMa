@@ -7,14 +7,13 @@ from transformers import (
     Qwen3VLMoeForConditionalGeneration,
     Qwen2VLForConditionalGeneration,
     AutoModel,
-    AutoModelForImageTextToText
+    AutoModelForImageTextToText,
+    Qwen3_5ForConditionalGeneration
 )
 
 from .model_creator import ModelCreator
 
 class HFModelCreator(ModelCreator):
-    model_cls: str
-    model_args: Dict[str, Any]
     def __init__(self, *, model_cls: str, model_args: Dict[str, Any]) -> None:
         self.model_cls = model_cls
         self.model_args = model_args

@@ -1,0 +1,9 @@
+_target_: src.memory_tokenizer.HFProcessor
+processor_name: "Qwen/Qwen3-VL-4B-Instruct"
+processor_kwargs:
+  add_generation_prompt: false
+  processor_kwargs:
+    padding: "longest"
+    max_length: 32000
+images_size: [512, 512]
+processor_parameter_updates: []

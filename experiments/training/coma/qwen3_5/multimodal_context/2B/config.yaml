@@ -1,0 +1,19 @@
+defaults:
+  - ../../configs/model/qwen3_5_2b@model
+  - ../../configs/processor/qwen3_5_2b@processor
+  - ../../configs/tokenizer_creator/qwen3_5_2b@tokenizer_creator
+  - ../../configs/context_sampler/multimodal_context@context_sampler
+  - ../../configs/memory_creator/multimodal_context@memory_creator
+  - ../../configs/base@_here_
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+training:
+  output_dir: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/multimodal_context/2B/checkpoints"
+  logging_dir: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/multimodal_context/2B/logs"

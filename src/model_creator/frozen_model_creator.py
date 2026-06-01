@@ -19,5 +19,5 @@ class FrozenModelCreator(ModelCreator):
             for name, module in base_model.named_modules():
                 if re.fullmatch(pattern, name) != None:
                     for n, p in module.named_parameters():
-                        p.requires_grad = True
+                        p.requires_grad = False
         return base_model
