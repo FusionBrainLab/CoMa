@@ -1,38 +1,4 @@
-from .floor_count_error import *
-from .id_iou import *
-from .massing_mesh_iou import *
-from .site_iou import *
-from .usable_area_error import *
-from .pattern_match_indicator import *
-from .function_exception_indicator import *
-from .safe_sample_metric import *
-from .mesh_floor_count_error import *
-from .mesh_usable_area_error import *
-from .mesh_site_iou import *
-from .site_match import *
-from .corners_softness import *
-from .building_overlap import *
-from .valid_json_indicator import *
-from .massing_complexity_match import *
-from .footprint_thinness_error import *
-from .reverse_metric import *
-from .bounded_sample_metric import *
-from .massing_site_direction_match import *
-from .massing_footprint_shape_match import *
-from .massing_footprint_position_match import *
-from .massing_footprint_bottleneck_rate import *
-from .extrusions_iou import *
-from .massing_continuity import *
-from .massing_polygons_continuity import *
-from .extrusion_elevation_deviation import *
-from .extrusions_self_iou import *
-from .extrusion_elevation_diversity import *
-from .massing_complexity import *
-from .bounded_normalized_sample_metric import *
-from .massing_side_length import *
-from .massing_side_length_error import *
-
-from .sample_metric import *
+"""from .sample_metric import *
 from .pattern_match_indicator import *
 from .valid_json_indicator import *
 from .corners_softness import *
@@ -76,4 +42,108 @@ from .massing_coverage import *
 from .massing_setback import *
 from .massing_elongation import *
 from .massing_courtyard_ratio import *
-from .massing_stepback_ratio import *
+from .massing_stepback_ratio import *"""
+
+__all__ = [
+    "SampleMetric",
+    "PatternMatchIndicator",
+    "ValidJsonIndicator",
+    "CornersSoftness",
+    "MassingFootprintBottleneckRate",
+    "MassingBuildingsMetric",
+    "BuildingVolumeContinuity",
+    "BuildingFootprintContinuity",
+    "BuildingExtrusionsContinuity",
+    "MassingBuildingsIntersectionRate",
+    "BuildingLevelsSelfIntersectionRate",
+    "BuildingCoveredExtrusionsRate",
+    "BuildingExtrusionsIntersectionRate",
+    "BuildingZeroSidesRate",
+    "BuildingZeroHeightsRate",
+    "BuildingElevationsOrderValidity",
+    "ReverseMetric",
+    "BoundedSampleMetric",
+    "FeatureMatch",
+    "BuildingFloorCount",
+    "MassingRequirementsFeatureMatch",
+    "BuildingTotalArea",
+    "IdIoU",
+    "SiteMatch",
+    "FeatureComparison",
+    "MassingElementsCounter",
+    "MassingSideLengthDiversity",
+    "MassingAnglesDiversity",
+    "MassingElevationsDiversity",
+    "MassingExtrusionHeightDiversity",
+    "MassingFootprintsMetric",
+    "MassingPolygonsMetric",
+    "BoundedNormalizedSampleMetric",
+    "SafeSampleMetric",
+    "RequirementsNumericalFeature",
+    "RequirementsIdCount",
+    "SitePolygonMetric",
+    "SiteRequirementsAreaComplexity",
+    "MassingContextualRelevance",
+    "MassingFloorAreaRatio",
+    "MassingCoverage",
+    "MassingSetback",
+    "MassingElongation",
+    "MassingCourtyardRatio",
+    "MassingStepbackRatio",
+]
+
+_LAZY_IMPORTS = {
+    "SampleMetric": (".sample_metric", "SampleMetric"),
+    "PatternMatchIndicator": (".pattern_match_indicator", "PatternMatchIndicator"),
+    "ValidJsonIndicator": (".valid_json_indicator", "ValidJsonIndicator"),
+    "CornersSoftness": (".corners_softness", "CornersSoftness"),
+    "MassingFootprintBottleneckRate": (".massing_footprint_bottleneck_rate", "MassingFootprintBottleneckRate"),
+    "MassingBuildingsMetric": (".massing_buildings_metric", "MassingBuildingsMetric"),
+    "BuildingVolumeContinuity": (".building_volume_continuity", "BuildingVolumeContinuity"),
+    "BuildingFootprintContinuity": (".building_footprint_continuity", "BuildingFootprintContinuity"),
+    "BuildingExtrusionsContinuity": (".building_extrusions_continuity", "BuildingExtrusionsContinuity"),
+    "MassingBuildingsIntersectionRate": (".massing_buildings_intersection_rate", "MassingBuildingsIntersectionRate"),
+    "BuildingLevelsSelfIntersectionRate": (".building_levels_self_intersection_rate", "BuildingLevelsSelfIntersectionRate"),
+    "BuildingCoveredExtrusionsRate": (".building_covered_extrusions_rate", "BuildingCoveredExtrusionsRate"),
+    "BuildingExtrusionsIntersectionRate": (".building_extrusions_intersection_rate", "BuildingExtrusionsIntersectionRate"),
+    "BuildingZeroSidesRate": (".building_zero_sides_rate", "BuildingZeroSidesRate"),
+    "BuildingZeroHeightsRate": (".building_zero_heights_rate", "BuildingZeroHeightsRate"),
+    "BuildingElevationsOrderValidity": (".building_elevations_order_validity", "BuildingElevationsOrderValidity"),
+    "ReverseMetric": (".reverse_metric", "ReverseMetric"),
+    "BoundedSampleMetric": (".bounded_sample_metric", "BoundedSampleMetric"),
+    "FeatureMatch": (".feature_match", "FeatureMatch"),
+    "BuildingFloorCount": (".building_floor_count", "BuildingFloorCount"),
+    "MassingRequirementsFeatureMatch": (".massing_requirements_feature_match", "MassingRequirementsFeatureMatch"),
+    "BuildingTotalArea": (".building_total_area", "BuildingTotalArea"),
+    "IdIoU": (".id_iou", "IdIoU"),
+    "SiteMatch": (".site_match", "SiteMatch"),
+    "FeatureComparison": (".feature_comparison", "FeatureComparison"),
+    "MassingElementsCounter": (".massing_elements_counter", "MassingElementsCounter"),
+    "MassingSideLengthDiversity": (".massing_side_length_diversity", "MassingSideLengthDiversity"),
+    "MassingAnglesDiversity": (".massing_angles_diversity", "MassingAnglesDiversity"),
+    "MassingElevationsDiversity": (".massing_elevations_diversity", "MassingElevationsDiversity"),
+    "MassingExtrusionHeightDiversity": (".massing_extrusion_height_diversity", "MassingExtrusionHeightDiversity"),
+    "MassingFootprintsMetric": (".massing_footprints_metric", "MassingFootprintsMetric"),
+    "MassingPolygonsMetric": (".massing_polygons_metric", "MassingPolygonsMetric"),
+    "BoundedNormalizedSampleMetric": (".bounded_normalized_sample_metric", "BoundedNormalizedSampleMetric"),
+    "SafeSampleMetric": (".safe_sample_metric", "SafeSampleMetric"),
+    "RequirementsNumericalFeature": (".requirements_numerical_feature", "RequirementsNumericalFeature"),
+    "RequirementsIdCount": (".requirements_id_count", "RequirementsIdCount"),
+    "SitePolygonMetric": (".site_polygon_metric", "SitePolygonMetric"),
+    "SiteRequirementsAreaComplexity": (".site_requirements_area_complexity", "SiteRequirementsAreaComplexity"),
+    "MassingContextualRelevance": (".massing_contextual_relevance", "MassingContextualRelevance"),
+    "MassingFloorAreaRatio": (".massing_floor_area_ratio", "MassingFloorAreaRatio"),
+    "MassingCoverage": (".massing_coverage", "MassingCoverage"),
+    "MassingSetback": (".massing_setback", "MassingSetback"),
+    "MassingElongation": (".massing_elongation", "MassingElongation"),
+    "MassingCourtyardRatio": (".massing_courtyard_ratio", "MassingCourtyardRatio"),
+    "MassingStepbackRatio": (".massing_stepback_ratio", "MassingStepbackRatio"),
+}
+
+def __getattr__(name: str):
+    if name in _LAZY_IMPORTS:
+        module_path, attr = _LAZY_IMPORTS[name]
+        import importlib
+        module = importlib.import_module(module_path, __package__)
+        return getattr(module, attr)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
