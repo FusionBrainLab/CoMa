@@ -1,0 +1,307 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    negative_sampling_testset:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/benchmarks/coma/metrics_validation/dataset
+      name_pattern: .*
+      verbose: true
+  metrics:
+    HeightMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingBuildingsMetric
+          massing_key: massing
+          building_metric:
+            _target_: src.sample_metric.BuildingFloorCount
+            building_key: building
+            floor_height: 3.0
+          building_key: building
+          reduction: mean
+          wrap_to_massing: false
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    DirectionMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DirectionPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: nearest
+      gt_label_key: label
+    CompactnessMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.CircularityPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    PointsCountMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: point
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsCountMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: polygon
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    BuildingsCountMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: building
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    FARMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingFloorAreaRatio
+          massing_key: massing
+          site_key: site_contour
+          floor_height: 3.0
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    CoverageMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingCoverage
+          massing_key: massing
+          site_key: site_contour
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    SetbackMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingSetback
+          massing_key: massing
+          site_key: site_contour
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    ElongationMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingElongation
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    CourtyardRatioMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingCourtyardRatio
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+    StepbackRatioMatch:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+          - site_contour
+        massing_metric:
+          _target_: src.sample_metric.MassingStepbackRatio
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: true
+        context_reduction: mean
+      gt_label_key: label
+  eval_configs: 
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: HeightMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: DirectionMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: CompactnessMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: PointsCountMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: PolygonsCountMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: BuildingsCountMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: FARMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: CoverageMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: SetbackMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: ElongationMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: CourtyardRatioMatch
+    - _target_: src.validator.EvalConfig
+      method_name: negative_sampling_testset
+      metric_name: StepbackRatioMatch
+  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/benchmarks/coma/metrics_validation/result.json
