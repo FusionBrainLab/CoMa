@@ -1,17 +1,3 @@
-"""from .dataset_creator import *
-from .preprocess_dataset_creator import *
-from .csv_dataset_creator import *
-from .concat_dataset_creator import *
-from .inversed_json_dataset_loader import *
-from .partial_dataset_loader import *
-from .inversed_json_chunk_dataset_loader import *
-from .inversed_json_chunk_preprocess_dataset_loader import *
-from .memory_dataset_loader import *
-from .osm_buildings_creator import *
-from .osm_regions_creator import *
-from .coma_regions_creator import *
-from .coma_buildings_creator import *
-"""
 __all__ = [
     "DatasetCreator",
     "PreprocessDatasetCreator",
@@ -25,7 +11,7 @@ __all__ = [
     "OSMBuildingsCreator",
     "OSMRegionsCreator",
     "CoMaRegionsCreator",
-    "CoMaBuildingsCreator",
+    "CoMaBuildingsCreator"
 ]
 
 _LAZY_IMPORTS = {
@@ -41,7 +27,7 @@ _LAZY_IMPORTS = {
     "OSMBuildingsCreator": (".osm_buildings_creator", "OSMBuildingsCreator"),
     "OSMRegionsCreator": (".osm_regions_creator", "OSMRegionsCreator"),
     "CoMaRegionsCreator": (".coma_regions_creator", "CoMaRegionsCreator"),
-    "CoMaBuildingsCreator": (".coma_buildings_creator", "CoMaBuildingsCreator"),
+    "CoMaBuildingsCreator": (".coma_buildings_creator", "CoMaBuildingsCreator")
 }
 
 def __getattr__(name: str):

@@ -1,0 +1,6 @@
+outs:
+- md5: 2c44bb0729015a1829c0e38370cc0efa.dir
+  size: 153915078
+  nfiles: 12
+  hash: md5
+  path: checkpoints
