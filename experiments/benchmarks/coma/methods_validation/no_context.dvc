@@ -1,0 +1,6 @@
+outs:
+- md5: f95c8c6671d4cfe1a4dc795ad26ccfdd.dir
+  size: 65839298
+  nfiles: 3
+  hash: md5
+  path: no_context

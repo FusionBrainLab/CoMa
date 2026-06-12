@@ -16,13 +16,10 @@ def main(cfg: DictConfig):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("config_path", nargs="?", type=str)
-    parser.add_argument("--config_path", dest="config_path_arg", type=str)
+    parser.add_argument("--config_path", required=True, type=str)
     args, hydra_args = parser.parse_known_args()
 
-    config_path = args.config_path_arg or args.config_path
-    if config_path is None:
-        parser.error("config_path is required")
+    config_path = args.config_path
 
     sys.argv = [sys.argv[0], *hydra_args]
     

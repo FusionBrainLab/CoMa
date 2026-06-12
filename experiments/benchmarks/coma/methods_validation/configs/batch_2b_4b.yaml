@@ -1,0 +1,26 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+runs:
+  qwen_2b_0:
+    train_type: unimodal_context
+    model_size: 2
+    context_1d_count: 10
+    context_2d_count: 0
+    context_3d_count: 0
+    gpu_memory_utilization: 0.4
+
+  qwen_4b_0:
+    train_type: multimodal_context
+    model_size: 4
+    context_1d_count: 10
+    context_2d_count: 1
+    context_3d_count: 8
+    gpu_memory_utilization: 0.5

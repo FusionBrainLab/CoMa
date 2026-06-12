@@ -1,0 +1,6 @@
+outs:
+- md5: eb8f7295f02078a746491003ed77c279.dir
+  size: 3934815503
+  nfiles: 180
+  hash: md5
+  path: multimodal_context
