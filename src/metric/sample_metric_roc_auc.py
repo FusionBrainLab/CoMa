@@ -5,6 +5,7 @@ import re
 
 import pandas as pd
 from sklearn.metrics import roc_auc_score
+from tqdm import tqdm
 
 from .metric import Metric
 from ..sample_metric import SampleMetric
@@ -16,7 +17,14 @@ class SampleMetricROCAUC(Metric):
         self.gt_label_key = gt_label_key
     
     def __call__(self, *, submit: Dict[str, List[Any]]) -> float:
+        tqdm.pandas()
         samples = pd.DataFrame(submit)
-        samples["pred_labels"] = samples.apply(lambda row: self.sample_metric(sample=row.to_dict()), axis=1)
+        def get_metric(row):
+            try:
+                return self.sample_metric(sample=row.to_dict())
+            except Exception as e:
+                return None
+        samples["pred_labels"] = samples.progress_apply(get_metric, axis=1)
+        samples = samples[samples["pred_labels"].notna()]
         roc_auc = roc_auc_score(samples[self.gt_label_key], samples["pred_labels"])
         return roc_auc

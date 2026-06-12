@@ -34,18 +34,18 @@ class MassingContextualRelevance(SampleMetric):
         massing = sample[self.massing_key]
         massing_sample = {
             self.massing_key: massing,
-            **{sample[k] for k in self.additional_features}
+            **{k: sample[k] for k in self.additional_features}
         }
         massing_value = self.massing_metric(sample=massing_sample)
 
-        context = self.context_dataset.loc[self.context_key]
+        context = self.context_dataset.loc[sample[self.context_key]]
         context_values = []
         for _, row in context.iterrows():
             context_sample = {
                 self.massing_key: row[self.massing_key],
-                **{row[k] for k in self.additional_features}
+                **{k: row[k] for k in self.additional_features}
             }
-            context_value = self.massing_context_metric(sample=context_sample)
+            context_value = self.massing_metric(sample=context_sample)
             context_values.append(context_value)
 
         if self.context_reduction == "min":
