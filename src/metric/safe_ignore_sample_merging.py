@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 import json
 import re
+import traceback
 
 import pandas as pd
 from tqdm import tqdm
@@ -24,7 +25,9 @@ class SafeIgnoreSampleMerging(Metric):
             try:
                 local_result = self.sample_metric(sample=row.to_dict())
                 results.append(local_result)
-            except:
+            except Exception as e:
+                """print(f"Error processing sample {ind}: {e}")
+                print(traceback.format_exc())"""
                 continue
         score = self.results_merger(floats=results)
         return score

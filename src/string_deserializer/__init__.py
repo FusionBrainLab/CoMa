@@ -8,7 +8,8 @@ __all__ = [
     "DummyRosreestrIdParser",
     "PDFPathImagesCreator",
     "MassingTemplateDeserializer",
-    "JsonDeserializer"
+    "JsonDeserializer",
+    "RegexArgsDeserializer"
 ]
 
 _LAZY_IMPORTS = {
@@ -21,7 +22,8 @@ _LAZY_IMPORTS = {
     "DummyRosreestrIdParser": (".dummy_rosreestr_id_parser", "DummyRosreestrIdParser"),
     "PDFPathImagesCreator": (".pdf_path_images_creator", "PDFPathImagesCreator"),
     "MassingTemplateDeserializer": (".massing_template_deserializer", "MassingTemplateDeserializer"),
-    "JsonDeserializer": (".json_deserializer", "JsonDeserializer")
+    "JsonDeserializer": (".json_deserializer", "JsonDeserializer"),
+    "RegexArgsDeserializer": (".regex_args_deserializer", "RegexArgsDeserializer")
 }
 
 def __getattr__(name: str):
