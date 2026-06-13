@@ -1,0 +1,31 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+train_type: multimodal_context
+model_size: 4
+context_1d_count: 10
+context_2d_count: 1
+context_3d_count: 8
+  
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+      name_pattern: ".*"
+      verbose: true
+  metrics: {}
+  submit_to_metrics:
+    train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}:
+      - contextual_relevance
+  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json
+    

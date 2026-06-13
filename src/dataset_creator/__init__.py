@@ -11,7 +11,8 @@ __all__ = [
     "OSMBuildingsCreator",
     "OSMRegionsCreator",
     "CoMaRegionsCreator",
-    "CoMaBuildingsCreator"
+    "CoMaBuildingsCreator",
+    "ValidationResultsLoader"
 ]
 
 _LAZY_IMPORTS = {
@@ -27,7 +28,8 @@ _LAZY_IMPORTS = {
     "OSMBuildingsCreator": (".osm_buildings_creator", "OSMBuildingsCreator"),
     "OSMRegionsCreator": (".osm_regions_creator", "OSMRegionsCreator"),
     "CoMaRegionsCreator": (".coma_regions_creator", "CoMaRegionsCreator"),
-    "CoMaBuildingsCreator": (".coma_buildings_creator", "CoMaBuildingsCreator")
+    "CoMaBuildingsCreator": (".coma_buildings_creator", "CoMaBuildingsCreator"),
+    "ValidationResultsLoader": (".validation_results_loader", "ValidationResultsLoader")
 }
 
 def __getattr__(name: str):
