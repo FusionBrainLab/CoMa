@@ -7,6 +7,11 @@ hydra:
   output_subdir: null
   run:
     dir: .
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
   
 method:
   _target_: src.core.function_utils.FunctionGraph

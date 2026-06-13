@@ -7,7 +7,12 @@ hydra:
   output_subdir: null
   run:
     dir: .
-
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+  
 model_size: 4
 context_2d_count: 1
   

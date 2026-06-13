@@ -7,11 +7,19 @@ hydra:
   output_subdir: null
   run:
     dir: .
-
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+  
 x_feature: context_1d_count
 model_size: 4
 zero_feature_1: context_2d_count
 zero_feature_2: context_3d_count
+
+feature_renaming: "${oc.create:'{\"${x_feature}\": \"${x_feature}\", \"train_type\": \"Train Type\", \"contextual_relevance\": \"Contextual Relevance\"}'}"
+fixed_features: "${oc.create:'{\"model_size\": ${model_size}, \"${zero_feature_1}\": 0, \"${zero_feature_2}\": 0}'}"
   
 method:
   _target_: src.core.function_utils.FunctionGraph
@@ -47,21 +55,15 @@ method:
           y_feature: contextual_relevance
           line_feature: train_type
           title: "Contextual Relevance Dynamic by ${x_feature} on train type for Qwen3-VL-${model_size}B"
-          feature_renaming:
-            ${x_feature}: "${x_feature}"
-            train_type: "Train Type"
-            contextual_relevance: "Contextual Relevance"
-          fixed_features:
-            model_size: ${model_size}
-            ${zero_feature_1}: 0
-            ${zero_feature_2}: 0
-        horizontal_lines:
-          "No Context":
-            train_type: no_context
-            model_size: ${model_size}
-            context_1d_count: 0
-            context_2d_count: 0
-            context_3d_count: 0
+          feature_renaming: ${feature_renaming}
+          fixed_features: ${fixed_features}
+          horizontal_lines:
+            "No Context":
+              train_type: no_context
+              model_size: ${model_size}
+              context_1d_count: 0
+              context_2d_count: 0
+              context_3d_count: 0
         path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_line/${x_feature}_${model_size}B.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser

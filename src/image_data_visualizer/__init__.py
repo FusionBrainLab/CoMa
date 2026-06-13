@@ -10,7 +10,8 @@ __all__ = [
     "FloorSeparatedMassingMeshVisualizer",
     "MapRegionVisualizer"
     "HeatmapDatasetVisualizer",
-    "MultiLineDatasetVisualizer"
+    "MultiLineDatasetVisualizer",
+    "MultiDatasetSamplesVisualizer"
 ]
 
 _LAZY_IMPORTS = {
@@ -25,7 +26,8 @@ _LAZY_IMPORTS = {
     "FloorSeparatedMassingMeshVisualizer": (".floor_separated_massing_mesh_visualizer", "FloorSeparatedMassingMeshVisualizer"),
     "MapRegionVisualizer": (".map_region_visualizer", "MapRegionVisualizer"),
     "HeatmapDatasetVisualizer": (".heatmap_dataset_visualizer", "HeatmapDatasetVisualizer"),
-    "MultiLineDatasetVisualizer": (".multi_line_dataset_visualizer", "MultiLineDatasetVisualizer")
+    "MultiLineDatasetVisualizer": (".multi_line_dataset_visualizer", "MultiLineDatasetVisualizer"),
+    "MultiDatasetSamplesVisualizer": (".multi_dataset_samples_visualizer", "MultiDatasetSamplesVisualizer")
 }
 
 def __getattr__(name: str):

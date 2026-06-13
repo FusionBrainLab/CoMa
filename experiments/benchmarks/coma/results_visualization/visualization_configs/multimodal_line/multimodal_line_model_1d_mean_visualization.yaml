@@ -7,7 +7,12 @@ hydra:
   output_subdir: null
   run:
     dir: .
-
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+  
 x_feature: model_size
 line_feature: context_1d_count
   
@@ -51,12 +56,12 @@ method:
             contextual_relevance: "Contextual Relevance"
           fixed_features:
             train_type: multimodal_context
-        horizontal_lines:
-          "No Context":
-            train_type: no_context
-            context_1d_count: 0
-            context_2d_count: 0
-            context_3d_count: 0
+          horizontal_lines:
+            "No Context":
+              train_type: no_context
+              context_1d_count: 0
+              context_2d_count: 0
+              context_3d_count: 0
         path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_line/model_1d_${x_feature}/mean.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser

@@ -1,7 +1,6 @@
 from typing import List, Dict, Any
 import re
 import json
-import maths
 import os
 
 from PIL import Image

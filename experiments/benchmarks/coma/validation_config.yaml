@@ -7,6 +7,11 @@ hydra:
   output_subdir: null
   run:
     dir: .
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
 
 train_type: multimodal_context
 model_size: 4
@@ -18,14 +23,36 @@ method:
   _target_: src.validator.Validator
   _convert_: all
   submit_loaders:
-    train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}:
+    submit:
       _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
       name_pattern: ".*"
       verbose: true
-  metrics: {}
-  submit_to_metrics:
-    train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}:
+  metrics:
+    contextual_relevance:
+      _target_: src.metric.SafeIgnoreSampleMerging
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: pred_massing
+        context_key: context_ids_100
+        additional_features: ["site_contour"]
+        massing_metric:
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DirectionPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings
+          name_pattern: ".*"
+          verbose: true
+        context_reduction: nearest
+      results_merger:
+        _target_: src.floats_merger.Mean
+  submits_to_metrics:
+    submit:
       - contextual_relevance
   result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json
     
