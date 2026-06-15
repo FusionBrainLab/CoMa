@@ -1,0 +1,1727 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    negative_sampling_testset:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/metrics_validation/dataset
+      name_pattern: .*
+      verbose: true
+  metrics:
+    Height__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id001
+          _target_: src.sample_metric.MassingBuildingsMetric
+          massing_key: massing
+          building_metric:
+            _target_: src.sample_metric.BuildingFloorCount
+            building_key: building
+            floor_height: 3.0
+          building_key: building
+          reduction: mean
+          wrap_to_massing: false
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    Height__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id001
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    Direction__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id002
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DirectionPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    Direction__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id002
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FAR__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id003
+          _target_: src.sample_metric.MassingFloorAreaRatio
+          massing_key: massing
+          site_key: site_contour
+          floor_height: 3.0
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FAR__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id003
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    Coverage__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id004
+          _target_: src.sample_metric.MassingCoverage
+          massing_key: massing
+          site_key: site_contour
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    Coverage__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id004
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    Setback__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id005
+          _target_: src.sample_metric.MassingSetback
+          massing_key: massing
+          site_key: site_contour
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    Setback__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id005
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    Elongation__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id006
+          _target_: src.sample_metric.MassingElongation
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    Elongation__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id006
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    CourtyardRatio__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id007
+          _target_: src.sample_metric.MassingCourtyardRatio
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    CourtyardRatio__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id007
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    StepbackRatio__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id008
+          _target_: src.sample_metric.MassingStepbackRatio
+          massing_key: massing
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    StepbackRatio__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id008
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PointsCount__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id009
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: point
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PointsCount__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id009
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsCount__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id010
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: polygon
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsCount__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id010
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    BuildingsCount__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id011
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: building
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    BuildingsCount__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id011
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    ExtrusionsCount__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: &id012
+          _target_: src.sample_metric.MassingElementsCounter
+          massing_key: massing
+          element: extrusion
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    ExtrusionsCount__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features:
+        - site_contour
+        massing_metric: *id012
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    SideLengthDiversity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id013
+          _target_: src.sample_metric.MassingSideLengthDiversity
+          massing_key: massing
+          diversity_type: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    SideLengthDiversity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id013
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    SideLengthDiversity_unique__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id014
+          _target_: src.sample_metric.MassingSideLengthDiversity
+          massing_key: massing
+          diversity_type: unique
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    SideLengthDiversity_unique__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id014
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    AnglesDiversity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id015
+          _target_: src.sample_metric.MassingAnglesDiversity
+          massing_key: massing
+          diversity_type: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    AnglesDiversity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id015
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    AnglesDiversity_unique__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id016
+          _target_: src.sample_metric.MassingAnglesDiversity
+          massing_key: massing
+          diversity_type: unique
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    AnglesDiversity_unique__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id016
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    ElevationsDiversity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id017
+          _target_: src.sample_metric.MassingElevationsDiversity
+          massing_key: massing
+          diversity_type: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    ElevationsDiversity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id017
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    ElevationsDiversity_unique__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id018
+          _target_: src.sample_metric.MassingElevationsDiversity
+          massing_key: massing
+          diversity_type: unique
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    ElevationsDiversity_unique__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id018
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    ExtrusionHeightDiversity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id019
+          _target_: src.sample_metric.MassingExtrusionHeightDiversity
+          massing_key: massing
+          diversity_type: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    ExtrusionHeightDiversity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id019
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    ExtrusionHeightDiversity_unique__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id020
+          _target_: src.sample_metric.MassingExtrusionHeightDiversity
+          massing_key: massing
+          diversity_type: unique
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    ExtrusionHeightDiversity_unique__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id020
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsCircularity_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id021
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.CircularityPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsCircularity_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id021
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsCircularity_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id022
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.CircularityPA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsCircularity_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id022
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsCircularity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id023
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.CircularityPA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsCircularity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id023
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsCircularity_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id024
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.CircularityPA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsCircularity_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id024
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsConvexRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id025
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.ConvexRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsConvexRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id025
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsConvexRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id026
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.ConvexRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsConvexRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id026
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsConvexRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id027
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.ConvexRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsConvexRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id027
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsConvexRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id028
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.ConvexRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsConvexRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id028
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsDescribedRectangleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id029
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedRectangleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsDescribedRectangleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id029
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsDescribedRectangleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id030
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedRectangleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsDescribedRectangleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id030
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsDescribedRectangleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id031
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedRectangleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsDescribedRectangleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id031
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsDescribedRectangleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id032
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedRectangleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsDescribedRectangleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id032
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsDescribedCircleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id033
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedCircleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsDescribedCircleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id033
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsDescribedCircleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id034
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedCircleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsDescribedCircleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id034
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsDescribedCircleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id035
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedCircleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsDescribedCircleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id035
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsDescribedCircleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id036
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.DescribedCircleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsDescribedCircleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id036
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsInscribedCircleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id037
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.InscribedCircleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsInscribedCircleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id037
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsInscribedCircleRate_mean__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id038
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.InscribedCircleRatePA
+          reduction: mean
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsInscribedCircleRate_mean__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id038
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    FootprintsInscribedCircleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id039
+          _target_: src.sample_metric.MassingFootprintsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.InscribedCircleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    FootprintsInscribedCircleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id039
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+    PolygonsInscribedCircleRate_std__mean:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: &id040
+          _target_: src.sample_metric.MassingPolygonsMetric
+          massing_key: massing
+          polygons_metric:
+            _target_: src.polygons_analyzer.InscribedCircleRatePA
+          reduction: std
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: mean
+      gt_label_key: label
+    PolygonsInscribedCircleRate_std__nearest:
+      _target_: src.metric.SampleMetricROCAUC
+      sample_metric:
+        _target_: src.sample_metric.MassingContextualRelevance
+        massing_key: massing
+        context_key: context_ids_100
+        additional_features: []
+        massing_metric: *id040
+        id_key: id
+        context_dataset_loader:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          name_pattern: .*
+          verbose: false
+        context_reduction: nearest
+      gt_label_key: label
+  eval_configs:
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Height__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Height__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Direction__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Direction__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FAR__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FAR__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Coverage__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Coverage__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Setback__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Setback__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Elongation__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: Elongation__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: CourtyardRatio__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: CourtyardRatio__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: StepbackRatio__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: StepbackRatio__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PointsCount__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PointsCount__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCount__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCount__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: BuildingsCount__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: BuildingsCount__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionsCount__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionsCount__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: SideLengthDiversity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: SideLengthDiversity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: SideLengthDiversity_unique__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: SideLengthDiversity_unique__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: AnglesDiversity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: AnglesDiversity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: AnglesDiversity_unique__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: AnglesDiversity_unique__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ElevationsDiversity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ElevationsDiversity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ElevationsDiversity_unique__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ElevationsDiversity_unique__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionHeightDiversity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionHeightDiversity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionHeightDiversity_unique__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: ExtrusionHeightDiversity_unique__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsCircularity_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsCircularity_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCircularity_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCircularity_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsCircularity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsCircularity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCircularity_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsCircularity_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsConvexRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsConvexRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsConvexRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsConvexRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsConvexRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsConvexRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsConvexRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsConvexRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedRectangleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedRectangleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedRectangleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedRectangleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedRectangleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedRectangleRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedRectangleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedRectangleRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedCircleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedCircleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedCircleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedCircleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedCircleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsDescribedCircleRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedCircleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsDescribedCircleRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsInscribedCircleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsInscribedCircleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsInscribedCircleRate_mean__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsInscribedCircleRate_mean__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsInscribedCircleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: FootprintsInscribedCircleRate_std__nearest
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsInscribedCircleRate_std__mean
+  - _target_: src.validator.EvalConfig
+    method_name: negative_sampling_testset
+    metric_name: PolygonsInscribedCircleRate_std__nearest
+  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/metrics_validation/result_combinations.json

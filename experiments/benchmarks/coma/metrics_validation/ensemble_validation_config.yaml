@@ -1,0 +1,120 @@
+defaults:
+  - feature_pool: coma            # shared 17-feature pool -> ${_feature_pool}
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
+  val: ${paths.base}/experiments/benchmarks/coma/metrics_validation/dataset
+  results: ${paths.base}/experiments/benchmarks/coma/metrics_validation/results
+  figures: ${paths.base}/experiments/benchmarks/coma/metrics_validation/figures
+
+method:
+  _target_: src.metric_validation.MetricsValidationExperiment
+  _convert_: all
+  consolidated_path: ${paths.results}/consolidated_results.json
+  results_dir: ${paths.results}
+  single_metric_sweep_path: ${paths.results}/single_metric_sweep.json
+
+  # ── stage 1: score the 17-feature pool into a cached matrix ──
+  feature_matrix:
+    _target_: src.metric_validation.FeatureScoreMatrix
+    label_key: label
+    group_key: id
+    cache_path: ${paths.results}/scores.npz
+    force_rescore: false
+    submit_loader:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: ${paths.val}
+      name_pattern: .*
+      verbose: true
+    feature_metrics: ${_feature_pool}
+
+  # ── stage 2: per-feature analysis (lightweight model, 3 folds) ──
+  feature_analysis:
+    _target_: src.metric_validation.FeatureAnalysisExperiment
+    output_path: ${paths.results}/feature_analysis.json
+    n_splits: 3
+    analysis_model:
+      _target_: src.metric_validation.EnsembleModel
+      standardize: false
+      estimator:
+        _target_: sklearn.ensemble.HistGradientBoostingClassifier
+        max_depth: 3
+        learning_rate: 0.15
+        max_iter: 120
+        early_stopping: true
+        n_iter_no_change: 8
+        validation_fraction: 0.15
+        random_state: 0
+
+  # ── stage 3: learned-ensemble comparison (LogReg / GBDT / CatBoost) ──
+  ensemble_experiment:
+    _target_: src.metric_validation.LearnedEnsembleExperiment
+    output_path: ${paths.results}/model_comparison.json
+    oof_path: ${paths.results}/oof_all17.npz
+    importance_path: ${paths.results}/feature_importance.json
+    importance_feature_set: all17
+    n_splits: 5
+    feature_sets:
+      direction_only: [direction_nearest]
+      base9: [direction_nearest, far_mean, coverage_mean, height_mean, circ_nearest, elong_mean, courtyard_mean, exdiv_nearest, eldiv_nearest]
+      base9_plus_orient: [direction_nearest, far_mean, coverage_mean, height_mean, circ_nearest, elong_mean, courtyard_mean, exdiv_nearest, eldiv_nearest, frechet_orient, orient_kde, frechet_classic]
+      all17: null
+    models:
+      LogReg:
+        _target_: src.metric_validation.EnsembleModel
+        standardize: true
+        estimator: {_target_: sklearn.linear_model.LogisticRegression, max_iter: 1000}
+      GBDT:
+        _target_: src.metric_validation.EnsembleModel
+        standardize: false
+        estimator:
+          _target_: sklearn.ensemble.HistGradientBoostingClassifier
+          max_depth: 3
+          learning_rate: 0.1
+          max_iter: 300
+          random_state: 0
+      CatBoost:
+        _target_: src.metric_validation.EnsembleModel
+        standardize: false
+        estimator:
+          _target_: catboost.CatBoostClassifier
+          depth: 4
+          learning_rate: 0.1
+          iterations: 400
+          loss_function: Logloss
+          random_seed: 0
+          verbose: false
+          allow_writing_files: false
+
+  # ── stage 4: figures ──
+  figures_renderer:
+    _target_: src.metric_validation.MetricFiguresRenderer
+    results_dir: ${paths.results}
+    figures_dir: ${paths.figures}
+    feature_groups:
+      direction_nearest: scalar
+      far_mean: scalar
+      coverage_mean: scalar
+      height_mean: scalar
+      circ_nearest: scalar
+      elong_mean: scalar
+      courtyard_mean: scalar
+      exdiv_nearest: scalar
+      eldiv_nearest: scalar
+      frechet_orient: orientation_dist
+      orient_kde: orientation_dist
+      frechet_classic: orientation_dist
+      direction_mean: extra_scalar
+      height_nearest: extra_scalar
+      setback_mean: extra_scalar
+      stepback_mean: extra_scalar
+      anglediv_nearest: extra_scalar
