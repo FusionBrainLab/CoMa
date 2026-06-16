@@ -37,7 +37,7 @@ method:
               max_tokens: 32000
               modality_estimations:
                 image: 256
-              parallelize: 16
+              parallelize: 12
             - _target_: src.dataset_processor.ShuffleProcessor
               random_seed: 42
       data_collator:

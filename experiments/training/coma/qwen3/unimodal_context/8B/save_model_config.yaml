@@ -1,0 +1,33 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.model_creator.PeftAdaptersLoader
+        base_model_creator:
+          _target_: src.model_creator.HFModelCreator
+          model_cls: "Qwen3VLForConditionalGeneration"
+          model_args:
+            pretrained_model_name_or_path: "Qwen/Qwen3-VL-8B-Instruct"
+        adapters_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/unimodal_context/8B/checkpoints/checkpoint-1002"
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: "model"
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.model_handler.HFModelSaver
+        path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/unimodal_context/8B/merged_model"
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {"model": "model"}

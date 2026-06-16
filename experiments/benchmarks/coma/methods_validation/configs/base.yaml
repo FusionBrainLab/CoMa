@@ -1,0 +1,343 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+train_type: multimodal_context
+model_size: 4
+context_1d_count: 10
+context_2d_count: 1
+context_3d_count: 8
+gpu_memory_utilization: 0.3
+  
+method:
+  _target_: src.submit_creator.SubmitCreator
+  _convert_: all
+  dataset_loader:
+    _target_: src.dataset_creator.PreprocessDatasetCreator
+    base_creator:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/splits/test"
+      name_pattern: ".*"
+      verbose: true
+    preprocessor:
+      _target_: src.dataset_processor.CompositionProcessor
+      base_processors:
+        - _target_: src.dataset_processor.MassingContextConverter
+          multi_image_col_to_folder:
+            "3d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/mesh_images"
+          single_image_col_to_folder:
+            "2d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/map_images"
+          context_ids_col: "context_ids_100"
+          json_context_col: "1d_context"
+          massing_col: "massing"
+          id_col: "id"
+          context_type_to_counts:
+            "json": ${context_1d_count}
+            "single_image": ${context_2d_count}
+            "multi_image": ${context_3d_count}
+          random_seed: 42
+          context_dataset_loader:
+            _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+            folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings"
+            name_pattern: ".*"
+            verbose: true
+        - _target_: src.dataset_processor.JsonStringDumper
+          cols:
+            - "site_contour"
+            - "massing"
+            - "1d_context"
+        - _target_: src.dataset_processor.FunctionProcessor
+          function:
+            _target_: src.core.function_utils.FunctionWrapper
+            function:
+              _target_: src.dict_to_memory_parser.ConcatDTMParser
+              base_parsers:
+                - _target_: src.dict_to_memory_parser.EmptyColAdaptiveDTMParser
+                  combination_to_cols:
+                    "1": ["1d_context"]
+                    "2": ["2d_context"]
+                    "3": ["3d_context"]
+                    "1_2": ["1d_context", "2d_context"]
+                    "1_3": ["1d_context", "3d_context"]
+                    "2_3": ["2d_context", "3d_context"]
+                    "1_2_3": ["1d_context", "2d_context", "3d_context"]
+                  combination_to_parser:
+                    "1":
+                      _target_: src.dict_to_memory_parser.ContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: the site contour and nearby buildings as JSON massings in the same geometry style.\nReturn the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                          args_mapping:
+                            "site_contour": "site_contour"
+                            "1d_context": "1d_context"
+                          modality: "text"
+                    "2":
+                      _target_: src.dict_to_memory_parser.ContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: a 2D map image follows. The red area in the center marks the development site."
+                          args_mapping: {}
+                          modality: "text"
+                        - _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                          modality: "image"
+                          key: "2d_context"
+                        - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Use the 2D context image and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                          args_mapping:
+                            "site_contour": "site_contour"
+                          modality: "text"
+                    "3":
+                      _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        "definition":
+                          _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: 3D views follow. Gray objects are surrounding buildings; the red area marks the development site. Multiple views show the same site from different sides."
+                          args_mapping: {}
+                          modality: "text"
+                        "image":
+                          _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                          modality: "image"
+                          key: "3d_context"
+                        "site":
+                          _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Use the 3D context views and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                          args_mapping:
+                            "site_contour": "site_contour"
+                          modality: "text"
+                      content_order: ["definition", "image", "site"]
+                      content_key_to_col:
+                        "image": "3d_context"
+                    "1_2":
+                      _target_: src.dict_to_memory_parser.ContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: a 2D map image follows. The red area in the center marks the development site."
+                          args_mapping: {}
+                          modality: "text"
+                        - _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                          modality: "image"
+                          key: "2d_context"
+                        - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Use the 2D context image, the site contour, and nearby buildings given as JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                          args_mapping:
+                            "site_contour": "site_contour"
+                            "1d_context": "1d_context"
+                          modality: "text"
+                    "1_3":
+                      _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        "definition":
+                          _target_: src.dict_to_content_parser.StringFormatDTCParser
+                          template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: 3D views follow. Gray objects are surrounding buildings; the red area marks the development site. Multiple views show the same site from different sides."
+                          args_mapping: {}
+                          modality: "text"
+                        "mesh_image":
+                            _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                            modality: "image"
+                            key: "3d_context"
+                        "site":
+                            _target_: src.dict_to_content_parser.StringFormatDTCParser
+                            template: "Use the 3D context views, the site contour, and nearby buildings given as JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                            args_mapping:
+                              "site_contour": "site_contour"
+                              "1d_context": "1d_context"
+                            modality: "text"
+                      content_order: ["definition", "mesh_image", "site"]
+                      content_key_to_col:
+                        "mesh_image": "3d_context"
+                    "2_3":
+                      _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        "definition":
+                            _target_: src.dict_to_content_parser.StringFormatDTCParser
+                            template: "Generate building massing geometry inside the development site contour, visually matching the surrounding urban context.\nInput: first a 2D map image, then 3D context views. In the 2D image, the red area marks the site. In 3D views, gray objects are surrounding buildings and the red area marks the site."
+                            args_mapping: {}
+                            modality: "text"
+                        "mesh_image":
+                            _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                            modality: "image"
+                            key: "3d_context"
+                        "map_image":
+                            _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                            modality: "image"
+                            key: "2d_context"
+                        "site":
+                            _target_: src.dict_to_content_parser.StringFormatDTCParser
+                            template: "Use the 2D map, 3D context views, and the site contour below. Return the massing as JSON.\n\nSite contour:\n{site_contour}"
+                            args_mapping:
+                              "site_contour": "site_contour"
+                            modality: "text"
+                      content_order: ["definition", "map_image", "mesh_image", "site"]
+                      content_key_to_col:
+                        "mesh_image": "3d_context"
+                        "map_image": "2d_context"
+                    "1_2_3":
+                      _target_: src.dict_to_memory_parser.MultiColContentChainDTMParser
+                      role: "user"
+                      content_makers:
+                        "definition":
+                            _target_: src.dict_to_content_parser.StringFormatDTCParser
+                            template: "Generate building massing geometry inside the development site contour, matching the surrounding urban context.\nInput: first a 2D map image, then 3D context views, plus nearby buildings as JSON massings. In images, the red area marks the development site; gray 3D objects are surrounding buildings."
+                            args_mapping: {}
+                            modality: "text"
+                        "mesh_image":
+                            _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                            modality: "image"
+                            key: "3d_context"
+                        "map_image":
+                            _target_: src.dict_to_content_parser.ModalityKeyDTCParser
+                            modality: "image"
+                            key: "2d_context"
+                        "site":
+                            _target_: src.dict_to_content_parser.StringFormatDTCParser
+                            template: "Use all provided context, the site contour, and nearby building JSON massings. Return the massing as JSON.\n\nSite contour:\n{site_contour}\n\nSurrounding buildings:\n{1d_context}"
+                            args_mapping:
+                              "site_contour": "site_contour"
+                              "1d_context": "1d_context"
+                            modality: "text"
+                      content_order: ["definition", "map_image", "mesh_image", "site"]
+                      content_key_to_col:
+                        "mesh_image": "3d_context"
+                        "map_image": "2d_context"
+                  empty_parser:
+                    _target_: src.dict_to_memory_parser.ContentChainDTMParser
+                    role: "user"
+                    content_makers:
+                      - _target_: src.dict_to_content_parser.StringFormatDTCParser
+                        template: "Generate building massing geometry inside the development site contour.\nInput: the site contour is given below.\nReturn the massing as JSON.\n\nSite contour:\n{site_contour}"
+                        args_mapping:
+                          "site_contour": "site_contour"
+                        modality: "text"
+            input_parser:
+              _target_: src.core.parsers.AnyToDictParser
+              key: "dictionary"
+          cols_to_args_mapping:
+            "site_contour": "site_contour"
+            "1d_context": "1d_context"
+            "3d_context": "3d_context"
+            "2d_context": "2d_context"
+          output_key: "memories"
+        - _target_: src.dataset_processor.ModalityEstimationTokensCountFilter
+          memory_col: "memories"
+          memory_tokenizer:
+            _target_: src.memory_tokenizer.HFProcessor
+            processor_name: "Qwen/Qwen3-VL-${model_size}B-Instruct"
+            processor_kwargs:
+              add_generation_prompt: true
+              processor_kwargs:
+                padding: "longest"
+                max_length: 32000
+            images_size: [512, 512]
+            processor_parameter_updates: []
+          ids_key: "input_ids"
+          max_tokens: 32000
+          modality_estimations:
+            image: 256
+          parallelize: 12
+  method:
+    _target_: src.error_safe_function.ErrorSafeFunction
+    base_function:
+      _target_: src.core.function_utils.FunctionGraph
+      functions:
+        - _target_: src.core.function_utils.FunctionWrapper
+          function:
+            _target_: src.core.function_utils.FunctionMap
+            function:
+              _target_: src.core.function_utils.FunctionWrapper
+              function:
+                _target_: src.memory_to_dict_parser.ProcessorVLLMInputCreator
+                processor_name: "Qwen/Qwen3-VL-${model_size}B-Instruct"
+                processor_kwargs:
+                  add_generation_prompt: true
+                  padding: "longest"
+                  max_length: 32000
+                images_size: [512, 512]
+                processor_parameter_updates: []
+              input_parser:
+                _target_: src.core.parsers.DictToDictParser
+                keys_mapping: {"memory": "memories"}
+            const_args: []
+            mapping_args: ["memories"]
+          output_parser:
+            _target_: src.core.parsers.AnyToDictParser
+            key: "vllm_input"
+        - _target_: src.core.function_utils.FunctionWrapper
+          function:
+            _target_: src.vllm_inference.vLLMInference
+            init_params:
+              model: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/${train_type}/${model_size}B/merged_model"
+              tokenizer: "Qwen/Qwen3-VL-${model_size}B-Instruct"
+              gpu_memory_utilization: ${gpu_memory_utilization}
+              max_model_len: 32000
+              max_num_seqs: 32
+            sampling_params:
+              temperature: 1
+              top_p: 1
+              top_k: 40
+              presence_penalty: 2
+              max_tokens: 32000
+          input_parser:
+            _target_: src.core.parsers.DictToDictParser
+            keys_mapping: {"inputs": "vllm_input"}
+          output_parser:
+            _target_: src.core.parsers.AnyToDictParser
+            key: "pred_output"
+        - _target_: src.core.function_utils.FunctionWrapper
+          function:
+            _target_: src.core.function_utils.FunctionMap
+            function:
+              _target_: src.core.function_utils.FunctionWrapper
+              function:
+                _target_: src.error_safe_function.ErrorSafeFunction
+                base_function:
+                  _target_: src.string_deserializer.RegexJsonDeserializer
+                  pattern: "(?<=\\*\\*Massing\\*\\*\n\n```json\n)(?:\\s|\\S)*(?=\n```)"
+                default_result: []
+              input_parser:
+                _target_: src.core.parsers.DictToDictParser
+                keys_mapping: {"string": "pred_output"}
+            const_args: []
+            mapping_args: ["pred_output"]
+          output_parser:
+            _target_: src.core.parsers.AnyToDictParser
+            key: "pred_massing"
+      output_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {"pred_massing": "pred_massing", "pred_output": "pred_output"}
+    default_result:
+      pred_output: ""
+      pred_massing: ""
+  submit_saver:
+    _target_: src.dataset_handler.PreprocessDatasetHandler
+    base_handler:
+      _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
+      folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}"
+      chunk_length: 10000
+    preprocessor:
+      _target_: src.dataset_processor.CompositionProcessor
+      base_processors:
+        - _target_: src.dataset_processor.ColumnDrop
+          cols:
+            - "memories"
+            - "1d_context"
+            - "2d_context"
+            - "3d_context"
+        - _target_: src.dataset_processor.JsonStringLoader
+          cols:
+            - "site_contour"
+            - "massing"
+  checkpoint_loader: null
+  max_workers: 1
+  batch_size: 32

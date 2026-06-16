@@ -1,0 +1,101 @@
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List
+import base64
+from io import BytesIO
+import io
+import math
+
+from PIL import Image
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from .image_data_visualizer import ImageDataVisualizer
+
+class MultiLineDatasetVisualizer(ImageDataVisualizer):
+    def __init__(self, *, dataset_key: str,
+                        x_feature: str,
+                        y_feature: str,
+                        line_features: List[str],
+                        title: str,
+                        feature_renaming: Dict[str, str],
+                        fixed_features: Dict[str, Any],
+                        horizontal_lines: Dict[str, Dict[str, Any]],
+                        show_confidence_interval: bool,
+                        palette: str) -> None:
+        self.dataset_key = dataset_key
+        self.x_feature = x_feature
+        self.y_feature = y_feature
+        self.line_features = line_features
+        self.title = title
+        self.feature_renaming = feature_renaming
+        self.fixed_features = fixed_features
+        self.horizontal_lines = horizontal_lines
+        self.show_confidence_interval = show_confidence_interval
+        self.palette = palette
+
+    def __call__(self, *, data: Dict[str, Any]) -> Image:
+        dataset = data[self.dataset_key]
+        df = pd.DataFrame(dataset)
+        base_df = df
+        for feature, value in self.fixed_features.items():
+            df = df[df[feature] == value]
+
+        sns.set_style("whitegrid")
+        plt.figure(figsize=(10, 6))
+        line_styles = ["-", "--", "-.", ":"]
+        markers = ["o", "s", "D", "^", "v", "<", ">", "P", "X", "*"]
+        if len(self.line_features) == 0:
+            raise ValueError("MultiLineDatasetVisualizer requires at least one line feature")
+        if len(self.line_features) > 10:
+            raise ValueError("MultiLineDatasetVisualizer supports up to 10 line features")
+        color_values = sorted(df[self.line_features[0]].unique())
+        colors = dict(zip(color_values, sns.color_palette(self.palette, len(color_values))))
+        style_values = sorted(df[self.line_features[1]].unique()) if len(self.line_features) > 1 else []
+        if len(style_values) > len(line_styles):
+            raise ValueError("Too many values for the second line feature")
+        styles = dict(zip(style_values, line_styles))
+        marker_values = sorted(df[self.line_features[2:]].drop_duplicates().itertuples(index=False, name=None)) if len(self.line_features) > 2 else []
+        if len(marker_values) > len(markers):
+            raise ValueError("Too many value combinations for marker line features")
+        marker_by_value = dict(zip(marker_values, markers))
+        ax = plt.gca()
+        for line_values, line_df in df.groupby(self.line_features):
+            line_values = line_values if isinstance(line_values, tuple) else (line_values,)
+            sns.lineplot(
+                data=line_df,
+                x=self.x_feature,
+                y=self.y_feature,
+                estimator="mean",
+                errorbar=("ci", 95) if self.show_confidence_interval else None,
+                color=colors[line_values[0]],
+                linestyle=styles[line_values[1]] if len(line_values) > 1 else "-",
+                marker=marker_by_value[line_values[2:]] if len(line_values) > 2 else "o",
+                label=", ".join([f"{feature}={value}" for feature, value in zip(self.line_features, line_values)]),
+                ax=ax,
+            )
+        horizontal_colors = sns.color_palette("Set2", len(self.horizontal_lines))
+        for (line_name, line_filters), color in zip(self.horizontal_lines.items(), horizontal_colors):
+            line_df = base_df
+            for feature, value in line_filters.items():
+                line_df = line_df[line_df[feature] == value]
+            line_y = line_df[self.y_feature].mean()
+            ax.axhline(line_y, linestyle="--", color=color)
+            ax.text(ax.get_xlim()[0], line_y, line_name, color=color, va="bottom")
+
+        plt.title(self.title, fontsize=16, pad=20)
+        plt.xlabel(self.feature_renaming.get(self.x_feature, self.x_feature), fontsize=12)
+        plt.ylabel(self.feature_renaming.get(self.y_feature, self.y_feature), fontsize=12)
+        ax.legend(
+            title=", ".join([self.feature_renaming.get(feature, feature) for feature in self.line_features]),
+            loc="center left",
+            bbox_to_anchor=(1.02, 0.5),
+        )
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=600, bbox_inches='tight')
+        buf.seek(0)
+
+        image = Image.open(buf)
+        return image

@@ -17,6 +17,7 @@ class InversedJsonChunkDatasetSaver(DatasetHandler):
         inversed_dataset = [{k: dataset[k][i] for k in dataset.keys()} for i in range(len(dataset[list(dataset.keys())[0]]))]
         n_chunks = math.ceil(len(inversed_dataset)/self.chunk_length)
         chunks = [inversed_dataset[i * self.chunk_length: min((i + 1) * self.chunk_length, len(inversed_dataset))] for i in range(n_chunks)]
+        os.makedirs(self.folder_path, exist_ok=True)
         for i, c in tqdm(enumerate(chunks), total=len(chunks)):
             path = os.path.join(self.folder_path, f"{i}.json")
             with open(path, "w+") as f:

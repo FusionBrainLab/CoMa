@@ -1,0 +1,20 @@
+name: 
+  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pandarallel
+  - pillow
+  - orjson
+  - openai
+  - triangle
+  - pandas
+  - numpy
+  - tqdm
+  - shapely
+  - trimesh
+  - mapbox_earcut
+prefix: 
+  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation

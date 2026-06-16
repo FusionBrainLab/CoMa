@@ -1,0 +1,9 @@
+name: 
+  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_inference
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+prefix: 
+  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_inference

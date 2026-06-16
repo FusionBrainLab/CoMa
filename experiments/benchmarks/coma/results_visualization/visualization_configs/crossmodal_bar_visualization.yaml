@@ -1,0 +1,96 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.ValidationResultsLoader
+          results_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results
+          submit_name_to_dict_deserializer:
+            _target_: src.string_deserializer.RegexArgsDeserializer
+            args_expressions:
+              train_type: "train-(.+?)_model-"
+              model_size: "model-([0-9]+)B"
+              context_1d_count: "1d([0-9]+)"
+              context_2d_count: "2d([0-9]+)"
+              context_3d_count: "3d([0-9]+)"
+            numeric_args:
+              model_size: "int"
+              context_1d_count: "int"
+              context_2d_count: "int"
+              context_3d_count: "int"
+        preprocessor:
+          _target_: src.dataset_processor.SqueezeFeatureCreator
+          cols: [context_1d_count, context_2d_count, context_3d_count]
+          fixed_feature_values:
+            "1D Context": {context_2d_count: 0, context_3d_count: 0}
+            "2D Context": {context_1d_count: 0, context_3d_count: 0}
+            "3D Context": {context_1d_count: 0, context_2d_count: 0}
+          fixed_feature_col: context_modality
+          value_feature_col: context_count
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.MultiBarplotDatasetVisualizer
+          dataset_key: dataset
+          y_feature: contextual_relevance
+          group_features:
+            - train_type
+            - model_size
+            - context_modality
+          title: "Contextual Relevance by train type, model size and inference context modality"
+          feature_renaming:
+            train_type: Train Type
+            model_size: Model Size
+            context_modality: Context Modality
+            context_count: Context Count
+            contextual_relevance: Contextual Relevance
+          fixed_features: {}
+          horizontal_lines:
+            "No Context-2B":
+              train_type: no_context
+              model_size: 2
+              context_1d_count: 0
+              context_2d_count: 0
+              context_3d_count: 0
+            "No Context-4B":
+              train_type: no_context
+              model_size: 4
+              context_1d_count: 0
+              context_2d_count: 0
+              context_3d_count: 0
+            "No Context-8B":
+              train_type: no_context
+              model_size: 8
+              context_1d_count: 0
+              context_2d_count: 0
+              context_3d_count: 0
+          show_confidence_interval: true
+          include_horizontal_line_samples: false
+          palette: "icefire"
+          bar_width: 0.5
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_bar.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data

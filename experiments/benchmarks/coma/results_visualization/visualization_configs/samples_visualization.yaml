@@ -1,0 +1,138 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+  
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/multimodal_context/2B/1d10_2d1_3d8
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.MassingAbsoluteCoordinatesProcessor
+              massing_col: pred_massing
+              base_point_col: base_point
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: dataset_2B
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/multimodal_context/4B/1d10_2d1_3d8
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.MassingAbsoluteCoordinatesProcessor
+              massing_col: pred_massing
+              base_point_col: base_point
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: dataset_4B
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {}
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/multimodal_context/8B/1d10_2d1_3d8
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.MassingAbsoluteCoordinatesProcessor
+              massing_col: pred_massing
+              base_point_col: base_point
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: dataset_8B
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {}
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.MultiDatasetSamplesVisualizer
+          dataset_keys: [dataset_2B, dataset_4B, dataset_8B]
+          samples_count: 5
+          id_col: id
+          dataset_preprocessor:
+            _target_: src.dataset_processor.CompositionProcessor
+            base_processors:
+              - _target_: src.dataset_processor.FunctionProcessor
+                function:
+                  _target_: src.core.function_utils.FunctionWrapper
+                  function:
+                    _target_: src.mesh_compiler.MassingContextMeshCompiler
+                    context_dataset_loader:
+                      _target_: src.dataset_creator.PreprocessDatasetCreator
+                      base_creator:
+                        _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+                        folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings
+                        name_pattern: ".*"
+                        verbose: true
+                      preprocessor:
+                        _target_: src.dataset_processor.CompositionProcessor
+                        base_processors:
+                          - _target_: src.dataset_processor.MassingAbsoluteCoordinatesProcessor
+                            massing_col: massing
+                            base_point_col: base_point
+                    id_key: id
+                    context_ids_key: context_ids_100
+                    massing_key: massing
+                  input_parser:
+                    _target_: src.core.parsers.AnyToDictParser
+                    key: obj
+                cols_to_args_mapping:
+                  context_ids_100: context_ids_100
+                output_key: context_mesh
+              - _target_: src.dataset_processor.FunctionProcessor
+                function:
+                  _target_: src.core.function_utils.FunctionWrapper
+                  function:
+                    _target_: src.mesh_compiler.MassingMeshCompiler
+                  input_parser:
+                    _target_: src.core.parsers.DictToDictParser
+                    keys_mapping: {"obj":"pred_massing"}
+                cols_to_args_mapping:
+                  pred_massing: pred_massing
+                output_key: massing_mesh
+          sample_visualizer:
+            _target_: src.image_data_visualizer.FocusMeshVisualizer
+            focus_mesh_key: massing_mesh
+            context_mesh_key: context_mesh
+            focus_mesh_color: red
+            context_mesh_color: grey
+            camera_distance_scale: 3
+            vertical_angle: 45
+            window_size: [1024, 1024]
+            angle: 0
+          random_seed: 42
+          cell_size: 256
+          dpi: 150
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/samples.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data
+    

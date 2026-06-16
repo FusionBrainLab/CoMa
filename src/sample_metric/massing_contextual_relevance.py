@@ -34,12 +34,12 @@ class MassingContextualRelevance(SampleMetric):
         # metric instances can coexist in memory.
         context_dataset = pd.DataFrame(self.context_dataset_loader())
         ids = context_dataset[self.id_key].tolist()
-        massings = context_dataset[self.massing_key].tolist()
+        massings = context_dataset["massing"].tolist()
         extra = {k: context_dataset[k].tolist() for k in self.additional_features}
         cache = {}
         for i in range(len(ids)):
             context_sample = {
-                self.massing_key: massings[i],
+                "massing": massings[i],
                 **{k: extra[k][i] for k in self.additional_features}
             }
             try:
@@ -55,7 +55,7 @@ class MassingContextualRelevance(SampleMetric):
     def __call__(self, *, sample: Dict[str, Any]) -> float:
         massing = sample[self.massing_key]
         massing_sample = {
-            self.massing_key: massing,
+            "massing": massing,
             **{k: sample[k] for k in self.additional_features}
         }
         massing_value = float(self.massing_metric(sample=massing_sample))
