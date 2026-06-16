@@ -18,6 +18,7 @@ __all__ = [
     "SafeIgnoreSampleMerging",
     "SafePreprocessIgnoreSampleMerging",
     "SampleMetricROCAUC",
+    "SampleMetricF1",
 ]
 
 _LAZY_IMPORTS = {
@@ -30,6 +31,7 @@ _LAZY_IMPORTS = {
     "SafeIgnoreSampleMerging": (".safe_ignore_sample_merging", "SafeIgnoreSampleMerging"),
     "SafePreprocessIgnoreSampleMerging": (".safe_preprocess_ignore_sample_merging", "SafePreprocessIgnoreSampleMerging"),
     "SampleMetricROCAUC": (".sample_metric_roc_auc", "SampleMetricROCAUC"),
+    "SampleMetricF1": (".sample_metric_f1", "SampleMetricF1"),
 }
 
 def __getattr__(name: str):

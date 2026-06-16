@@ -90,6 +90,10 @@ __all__ = [
     "MassingElongation",
     "MassingCourtyardRatio",
     "MassingStepbackRatio",
+    "MultiFeatureContextualRelevance",
+    "MassingContextFrechetDistance",
+    "MassingOrientationHistMatch",
+    "LearnedEnsembleMetric",
 ]
 
 _LAZY_IMPORTS = {
@@ -138,6 +142,10 @@ _LAZY_IMPORTS = {
     "MassingElongation": (".massing_elongation", "MassingElongation"),
     "MassingCourtyardRatio": (".massing_courtyard_ratio", "MassingCourtyardRatio"),
     "MassingStepbackRatio": (".massing_stepback_ratio", "MassingStepbackRatio"),
+    "MultiFeatureContextualRelevance": (".multi_feature_contextual_relevance", "MultiFeatureContextualRelevance"),
+    "MassingContextFrechetDistance": (".massing_context_frechet_distance", "MassingContextFrechetDistance"),
+    "MassingOrientationHistMatch": (".massing_orientation_hist_match", "MassingOrientationHistMatch"),
+    "LearnedEnsembleMetric": (".learned_ensemble_metric", "LearnedEnsembleMetric"),
 }
 
 def __getattr__(name: str):

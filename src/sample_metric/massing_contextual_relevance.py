@@ -25,10 +25,32 @@ class MassingContextualRelevance(SampleMetric):
         self.context_dataset_loader = context_dataset_loader
         self.context_reduction = context_reduction
 
+        # The context massings come from a fixed pool that is shared across all
+        # samples, so the characteristic of a given context massing only depends
+        # on its id. We precompute the characteristic once per unique context id
+        # and cache it. This is numerically identical to recomputing it for every
+        # sample, but avoids the O(num_samples * context_size) blow-up. After the
+        # cache is built the (large) context dataframe is dropped so that many
+        # metric instances can coexist in memory.
         context_dataset = pd.DataFrame(self.context_dataset_loader())
-        context_dataset["id_buffer"] = context_dataset["id"]
-        context_dataset = context_dataset.set_index("id_buffer")
-        self.context_dataset = context_dataset
+        ids = context_dataset[self.id_key].tolist()
+        massings = context_dataset["massing"].tolist()
+        extra = {k: context_dataset[k].tolist() for k in self.additional_features}
+        cache = {}
+        for i in range(len(ids)):
+            context_sample = {
+                "massing": massings[i],
+                **{k: extra[k][i] for k in self.additional_features}
+            }
+            try:
+                value = float(self.massing_metric(sample=context_sample))
+                if not np.isfinite(value):
+                    value = np.nan
+            except Exception:
+                value = np.nan
+            cache[ids[i]] = value
+        self.context_cache = cache
+        del context_dataset
 
     def __call__(self, *, sample: Dict[str, Any]) -> float:
         massing = sample[self.massing_key]
@@ -36,27 +58,22 @@ class MassingContextualRelevance(SampleMetric):
             "massing": massing,
             **{k: sample[k] for k in self.additional_features}
         }
-        massing_value = self.massing_metric(sample=massing_sample)
-        if np.isnan(massing_value):
-            return 0
+        massing_value = float(self.massing_metric(sample=massing_sample))
+        if not np.isfinite(massing_value):
+            raise ValueError("non-finite massing value")
 
-        context = self.context_dataset.loc[sample[self.context_key]]
-        context_values = []
-        for _, row in context.iterrows():
-            context_sample = {
-                "massing": row["massing"],
-                **{k: row[k] for k in self.additional_features}
-            }
-            context_value = self.massing_metric(sample=context_sample)
-            if not np.isnan(context_value):
-                context_values.append(context_value)
+        context_ids = sample[self.context_key]
+        context_values = [self.context_cache[i] for i in context_ids if i in self.context_cache]
+        context_values = np.asarray([v for v in context_values if np.isfinite(v)], dtype=float)
+        if context_values.size == 0:
+            raise ValueError("no valid context values")
 
         if self.context_reduction == "min":
-            context_value = min(context_values)
+            context_value = context_values.min()
         elif self.context_reduction == "max":
-            context_value = max(context_values)
+            context_value = context_values.max()
         elif self.context_reduction == "mean":
-            context_value = np.mean(context_values)
+            context_value = context_values.mean()
         elif self.context_reduction == "nearest":
             context_value = context_values[np.argmin(np.abs(context_values - massing_value))]
         else:
