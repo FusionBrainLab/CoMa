@@ -8,10 +8,12 @@ __all__ = [
     "SeabornDistributionVisualizer",
     "ContextualMeshVisualizer",
     "FloorSeparatedMassingMeshVisualizer",
-    "MapRegionVisualizer"
+    "MapRegionVisualizer",
     "HeatmapDatasetVisualizer",
+    "ContourHeatmapDatasetVisualizer",
     "MultiLineDatasetVisualizer",
-    "MultiDatasetSamplesVisualizer"
+    "MultiDatasetSamplesVisualizer",
+    "MultiBarplotDatasetVisualizer"
 ]
 
 _LAZY_IMPORTS = {
@@ -26,8 +28,10 @@ _LAZY_IMPORTS = {
     "FloorSeparatedMassingMeshVisualizer": (".floor_separated_massing_mesh_visualizer", "FloorSeparatedMassingMeshVisualizer"),
     "MapRegionVisualizer": (".map_region_visualizer", "MapRegionVisualizer"),
     "HeatmapDatasetVisualizer": (".heatmap_dataset_visualizer", "HeatmapDatasetVisualizer"),
+    "ContourHeatmapDatasetVisualizer": (".contour_heatmap_dataset_visualizer", "ContourHeatmapDatasetVisualizer"),
     "MultiLineDatasetVisualizer": (".multi_line_dataset_visualizer", "MultiLineDatasetVisualizer"),
-    "MultiDatasetSamplesVisualizer": (".multi_dataset_samples_visualizer", "MultiDatasetSamplesVisualizer")
+    "MultiDatasetSamplesVisualizer": (".multi_dataset_samples_visualizer", "MultiDatasetSamplesVisualizer"),
+    "MultiBarplotDatasetVisualizer": (".multi_barplot_dataset_visualizer", "MultiBarplotDatasetVisualizer")
 }
 
 def __getattr__(name: str):

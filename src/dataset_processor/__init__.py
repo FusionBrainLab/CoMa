@@ -25,7 +25,9 @@ __all__ = [
     "MassingContextSampler",
     "MassingContextConverter",
     "ModalityEstimationTokensCountFilter",
-    "MassingAbsoluteCoordinatesProcessor"
+    "MassingAbsoluteCoordinatesProcessor",
+    "SqueezeFeatureCreator",
+    "UnsqueezeFeatureCreator",
 ]
 
 _LAZY_IMPORTS = {
@@ -55,7 +57,9 @@ _LAZY_IMPORTS = {
     "MassingContextSampler": (".massing_context_sampler", "MassingContextSampler"),
     "MassingContextConverter": (".massing_context_converter", "MassingContextConverter"),
     "ModalityEstimationTokensCountFilter": (".modality_estimation_tokens_count_filter", "ModalityEstimationTokensCountFilter"),
-    "MassingAbsoluteCoordinatesProcessor": (".massing_absolute_coordinates_processor", "MassingAbsoluteCoordinatesProcessor")
+    "MassingAbsoluteCoordinatesProcessor": (".massing_absolute_coordinates_processor", "MassingAbsoluteCoordinatesProcessor"),
+    "SqueezeFeatureCreator": (".squeeze_feature_creator", "SqueezeFeatureCreator"),
+    "UnsqueezeFeatureCreator": (".unsqueeze_feature_creator", "UnsqueezeFeatureCreator"),
 }
 
 def __getattr__(name: str):

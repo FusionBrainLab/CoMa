@@ -4,6 +4,7 @@ import base64
 from io import BytesIO
 import io
 import math
+import textwrap
 
 from PIL import Image
 import numpy as np
@@ -46,9 +47,9 @@ class HeatmapDatasetVisualizer(ImageDataVisualizer):
         ).sort_index().sort_index(axis=1)
 
         sns.set_style("whitegrid")
-        plt.figure(figsize=(10, 6))
+        fig = plt.figure(figsize=(10, 6))
         ax = sns.heatmap(heatmap_df, annot=True, fmt=".2f", cmap=self.palette)
-        plt.title(self.title, fontsize=16, pad=20)
+        plt.title(textwrap.fill(self.title, width=int(fig.get_figwidth() * 8)), fontsize=16, pad=20)
         plt.xlabel(self.feature_renaming.get(self.x_feature, self.x_feature), fontsize=12)
         plt.ylabel(self.feature_renaming.get(self.y_feature, self.y_feature), fontsize=12)
         ax.collections[0].colorbar.set_label(
