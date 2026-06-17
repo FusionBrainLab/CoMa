@@ -3,6 +3,7 @@ from typing import List, Any, Dict, Literal
 import math
 import json
 
+import shapely
 from shapely import unary_union
 import numpy as np
 
@@ -29,7 +30,9 @@ class MassingFootprintsMetric(SampleMetric):
             shapely_polygons = []
             for e in m["massing"]:
                 polygons = [[(p[0], p[1]) for p in polygon] for polygon in e["polygons"]]
-                shapely_polygons.append(self.polygons_to_shapely_converter(polygons=polygons))
+                geometry = self.polygons_to_shapely_converter(polygons=polygons)
+                geometry = shapely.make_valid(geometry, method='structure', keep_collapsed=False)
+                shapely_polygons.append(geometry)
             footprint = unary_union(shapely_polygons)
             footprint = self.shapely_to_polygons_converter(polygons=footprint)
             value = self.polygons_metric(polygons=footprint)

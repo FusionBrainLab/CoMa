@@ -1,0 +1,210 @@
+hydra:
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: 1
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    root:
+      level: ERROR
+    disable_existing_loggers: true
+  job_logging:
+    version: 1
+    root:
+      level: ERROR
+    disable_existing_loggers: true
+  env: {}
+  mode: MULTIRUN
+  searchpath: []
+  callbacks: {}
+  output_subdir: null
+  overrides:
+    hydra:
+    - hydra.mode=MULTIRUN
+    task:
+    - x_feature=context_1d_count,context_2d_count,context_3d_count
+  job:
+    name: hydra_run
+    chdir: null
+    override_dirname: x_feature=context_1d_count,context_2d_count,context_3d_count
+    id: ???
+    num: ???
+    config_name: multimodal_line_visualization
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.3
+    version_base: '1.3'
+    cwd: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualization_configs
+      schema: file
+      provider: main
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: ???
+    choices:
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: disabled
+      hydra/hydra_logging: disabled
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false
+x_feature: context_1d_count
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+  - _target_: src.core.function_utils.FunctionWrapper
+    function:
+      _target_: src.dataset_creator.PreprocessDatasetCreator
+      base_creator:
+        _target_: src.dataset_creator.ValidationResultsLoader
+        results_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results
+        submit_name_to_dict_deserializer:
+          _target_: src.string_deserializer.RegexArgsDeserializer
+          args_expressions:
+            train_type: train-(.+?)_model-
+            model_size: model-([0-9]+)B
+            context_1d_count: 1d([0-9]+)
+            context_2d_count: 2d([0-9]+)
+            context_3d_count: 3d([0-9]+)
+          numeric_args:
+            model_size: int
+            context_1d_count: int
+            context_2d_count: int
+            context_3d_count: int
+      preprocessor:
+        _target_: src.dataset_processor.UnsqueezeFeatureCreator
+        feature_values:
+        - context_2d_count: 0
+          context_3d_count: 0
+        - context_1d_count: 0
+          context_3d_count: 0
+        - context_1d_count: 0
+          context_2d_count: 0
+        new_feature_col: context_type
+        old_feature_value: multimodal
+        new_feature_value: unimodal
+    output_parser:
+      _target_: src.core.parsers.AnyToDictParser
+      key: dataset
+  - _target_: src.core.function_utils.FunctionWrapper
+    function:
+      _target_: src.save_visualizer.SaveImageVisualizer
+      image_visualizer:
+        _target_: src.image_data_visualizer.MultiLineDatasetVisualizer
+        dataset_key: dataset
+        x_feature: ${x_feature}
+        y_feature: contextual_relevance
+        line_features:
+        - model_size
+        - context_type
+        title: Contextual Relevance Dynamic by ${x_feature}
+        feature_renaming:
+          ${x_feature}: ${x_feature}
+          model_size: Model Size
+          context_type: Context Type
+          contextual_relevance: Contextual Relevance
+        fixed_features:
+          train_type: multimodal_context
+        horizontal_lines:
+          No Context-2B:
+            train_type: no_context
+            model_size: 2
+            context_1d_count: 0
+            context_2d_count: 0
+            context_3d_count: 0
+          No Context-4B:
+            train_type: no_context
+            model_size: 4
+            context_1d_count: 0
+            context_2d_count: 0
+            context_3d_count: 0
+          No Context-8B:
+            train_type: no_context
+            model_size: 8
+            context_1d_count: 0
+            context_2d_count: 0
+            context_3d_count: 0
+        show_confidence_interval: true
+        palette: tab10
+      path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_line/${x_feature}.png
+    input_parser:
+      _target_: src.core.parsers.AnyToDictParser
+      key: data

@@ -13,7 +13,8 @@ __all__ = [
     "ContourHeatmapDatasetVisualizer",
     "MultiLineDatasetVisualizer",
     "MultiDatasetSamplesVisualizer",
-    "MultiBarplotDatasetVisualizer"
+    "MultiBarplotDatasetVisualizer",
+    "FeatureRangeDatasetMultiSamplesVisualizer"
 ]
 
 _LAZY_IMPORTS = {
@@ -31,7 +32,8 @@ _LAZY_IMPORTS = {
     "ContourHeatmapDatasetVisualizer": (".contour_heatmap_dataset_visualizer", "ContourHeatmapDatasetVisualizer"),
     "MultiLineDatasetVisualizer": (".multi_line_dataset_visualizer", "MultiLineDatasetVisualizer"),
     "MultiDatasetSamplesVisualizer": (".multi_dataset_samples_visualizer", "MultiDatasetSamplesVisualizer"),
-    "MultiBarplotDatasetVisualizer": (".multi_barplot_dataset_visualizer", "MultiBarplotDatasetVisualizer")
+    "MultiBarplotDatasetVisualizer": (".multi_barplot_dataset_visualizer", "MultiBarplotDatasetVisualizer"),
+    "FeatureRangeDatasetMultiSamplesVisualizer": (".feature_range_dataset_multi_samples_visualizer", "FeatureRangeDatasetMultiSamplesVisualizer")
 }
 
 def __getattr__(name: str):

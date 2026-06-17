@@ -10,8 +10,10 @@ from .core.base import Function
 class PolygonsToShapelyConverter(Function):
     def __call__(self, *, polygons: List[List[Tuple[float, float]]]) -> shapely.Geometry:
         shapely_cur_polygon = Polygon(polygons[0])
+        shapely_cur_polygon = shapely.make_valid(shapely_cur_polygon, method='structure', keep_collapsed=False)
         for i in range(1, len(polygons)):
             poly = Polygon(polygons[i])
+            poly = shapely.make_valid(poly, method='structure', keep_collapsed=False)
             if shapely_cur_polygon.equals(poly):
                 continue
             elif shapely_cur_polygon.contains_properly(poly):

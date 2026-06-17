@@ -18,7 +18,9 @@ class MassingElongation(SampleMetric):
         for building in massing:
             for extrusion in building["massing"]:
                 polygons = [[(p[0], p[1]) for p in polygon] for polygon in extrusion["polygons"]]
-                footprints.append(self.polygons_converter(polygons=polygons))
+                geometry = self.polygons_converter(polygons=polygons)
+                geometry = shapely.make_valid(geometry, method='structure', keep_collapsed=False)
+                footprints.append(geometry)
         return shapely.unary_union(footprints) if len(footprints) > 0 else shapely.GeometryCollection()
 
     def _exterior_points(self, *, geometry: shapely.Geometry):

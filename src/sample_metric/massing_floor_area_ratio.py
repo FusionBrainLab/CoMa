@@ -18,7 +18,9 @@ class MassingFloorAreaRatio(SampleMetric):
 
     def _extrusion_footprint(self, extrusion: Dict[str, Any]) -> shapely.Geometry:
         polygons = [[(p[0], p[1]) for p in polygon] for polygon in extrusion["polygons"]]
-        return self.polygons_converter(polygons=polygons)
+        geometry = self.polygons_converter(polygons=polygons)
+        geometry = shapely.make_valid(geometry, method='structure', keep_collapsed=False)
+        return geometry
 
     def _floor_area(self, *, building: Dict[str, Any]) -> float:
         extrusions = building["massing"]

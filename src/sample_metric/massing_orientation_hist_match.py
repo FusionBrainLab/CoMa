@@ -65,7 +65,7 @@ class MassingOrientationHistMatch(SampleMetric):
 
         context_dataset = pd.DataFrame(context_dataset_loader())
         ids = context_dataset[id_key].tolist()
-        massings = context_dataset[massing_key].tolist()
+        massings = context_dataset["massing"].tolist()
         # cache per-context-massing: array of orientation angles (one per building)
         self.context_angles: Dict[str, np.ndarray] = {}
         for i in range(len(ids)):
@@ -81,7 +81,9 @@ class MassingOrientationHistMatch(SampleMetric):
             for extrusion in building["massing"]:
                 polygons = [[(p[0], p[1]) for p in polygon]
                             for polygon in extrusion["polygons"]]
-                footprints.append(self.converter(polygons=polygons))
+                footprint = self.converter(polygons=polygons)
+                footprint = shapely.make_valid(footprint, method='structure', keep_collapsed=False)
+                footprints.append(footprint)
             footprint = shapely.unary_union(footprints)
             if footprint.is_empty:
                 return np.nan
