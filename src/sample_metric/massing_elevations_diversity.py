@@ -1,12 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import List, Any, Dict, Literal
-import math
-import json
+from typing import Any, Dict, Literal
 
-import shapely
-from shapely import maximum_inscribed_circle, minimum_rotated_rectangle
-from shapesimilarity import shape_similarity
-from shapely.geometry import Polygon, MultiPolygon, LineString, Point
 import numpy as np
 
 from .sample_metric import SampleMetric

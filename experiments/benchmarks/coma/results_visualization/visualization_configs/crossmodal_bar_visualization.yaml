@@ -45,6 +45,7 @@ method:
             "3D Context": {context_1d_count: 0, context_2d_count: 0}
           fixed_feature_col: context_modality
           value_feature_col: context_count
+          filter_rows: true
       output_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: dataset
@@ -59,13 +60,16 @@ method:
             - train_type
             - model_size
             - context_modality
-          title: "Contextual Relevance by train type, model size and inference context modality"
+          title: null
           feature_renaming:
             train_type: Train Type
             model_size: Model Size
             context_modality: Context Modality
             context_count: Context Count
             contextual_relevance: Contextual Relevance
+          legend_renaming:
+            unimodal_context: Unimodal Context
+            multimodal_context: Multimodal Context
           fixed_features: {}
           horizontal_lines:
             "No Context-2B":
@@ -90,6 +94,7 @@ method:
           include_horizontal_line_samples: false
           palette: "icefire"
           bar_width: 0.5
+          horizontal_lines_palette: "viridis"
         path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_bar.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser

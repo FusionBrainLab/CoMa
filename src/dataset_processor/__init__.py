@@ -28,6 +28,7 @@ __all__ = [
     "MassingAbsoluteCoordinatesProcessor",
     "SqueezeFeatureCreator",
     "UnsqueezeFeatureCreator",
+    "MetricFeatureComputeProcessor",
 ]
 
 _LAZY_IMPORTS = {
@@ -60,6 +61,7 @@ _LAZY_IMPORTS = {
     "MassingAbsoluteCoordinatesProcessor": (".massing_absolute_coordinates_processor", "MassingAbsoluteCoordinatesProcessor"),
     "SqueezeFeatureCreator": (".squeeze_feature_creator", "SqueezeFeatureCreator"),
     "UnsqueezeFeatureCreator": (".unsqueeze_feature_creator", "UnsqueezeFeatureCreator"),
+    "MetricFeatureComputeProcessor": (".metric_feature_compute_processor", "MetricFeatureComputeProcessor"),
 }
 
 def __getattr__(name: str):

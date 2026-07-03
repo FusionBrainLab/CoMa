@@ -86,7 +86,7 @@ class MassingContextFrechetDistance(SampleMetric):
 
         context_dataset = pd.DataFrame(self.context_dataset_loader())
         ids = context_dataset[self.id_key].tolist()
-        massings = context_dataset[self.massing_key].tolist()
+        massings = context_dataset["massing"].tolist()
         self.context_features: Dict[str, np.ndarray] = {}
         for i in range(len(ids)):
             self.context_features[ids[i]] = self._massing_building_features(massings[i])
@@ -102,7 +102,9 @@ class MassingContextFrechetDistance(SampleMetric):
         bottom = math.inf
         for extrusion in building["massing"]:
             polygons = [[(p[0], p[1]) for p in polygon] for polygon in extrusion["polygons"]]
-            footprints.append(self.converter(polygons=polygons))
+            footprint = self.converter(polygons=polygons)
+            footprint = shapely.make_valid(footprint, method='structure', keep_collapsed=False)
+            footprints.append(footprint)
             top = max(top, extrusion["top_elevation"])
             bottom = min(bottom, extrusion["bottom_elevation"])
         footprint = shapely.unary_union(footprints)

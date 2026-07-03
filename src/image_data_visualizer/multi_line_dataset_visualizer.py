@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import base64
 from io import BytesIO
 import io
@@ -18,10 +18,12 @@ class MultiLineDatasetVisualizer(ImageDataVisualizer):
                         x_feature: str,
                         y_feature: str,
                         line_features: List[str],
-                        title: str,
+                        title: Optional[str],
                         feature_renaming: Dict[str, str],
+                        legend_renaming: Dict[str, Dict[Any, str]],
                         fixed_features: Dict[str, Any],
                         horizontal_lines: Dict[str, Dict[str, Any]],
+                        include_horizontal_line_samples: bool,
                         show_confidence_interval: bool,
                         palette: str) -> None:
         self.dataset_key = dataset_key
@@ -30,8 +32,10 @@ class MultiLineDatasetVisualizer(ImageDataVisualizer):
         self.line_features = line_features
         self.title = title
         self.feature_renaming = feature_renaming
+        self.legend_renaming = legend_renaming
         self.fixed_features = fixed_features
         self.horizontal_lines = horizontal_lines
+        self.include_horizontal_line_samples = include_horizontal_line_samples
         self.show_confidence_interval = show_confidence_interval
         self.palette = palette
 
@@ -41,6 +45,12 @@ class MultiLineDatasetVisualizer(ImageDataVisualizer):
         base_df = df
         for feature, value in self.fixed_features.items():
             df = df[df[feature] == value]
+        if not self.include_horizontal_line_samples:
+            for line_filters in self.horizontal_lines.values():
+                mask = pd.Series(True, index=df.index)
+                for feature, value in line_filters.items():
+                    mask = mask & (df[feature] == value)
+                df = df[~mask]
 
         sns.set_style("whitegrid")
         plt.figure(figsize=(10, 6))
@@ -72,7 +82,10 @@ class MultiLineDatasetVisualizer(ImageDataVisualizer):
                 color=colors[line_values[0]],
                 linestyle=styles[line_values[1]] if len(line_values) > 1 else "-",
                 marker=marker_by_value[line_values[2:]] if len(line_values) > 2 else "o",
-                label=", ".join([f"{feature}={value}" for feature, value in zip(self.line_features, line_values)]),
+                label=", ".join([
+                    str(self.legend_renaming.get(feature, {}).get(value, value))
+                    for feature, value in zip(self.line_features, line_values)
+                ]),
                 ax=ax,
             )
         horizontal_colors = sns.color_palette("Set2", len(self.horizontal_lines))
@@ -84,7 +97,8 @@ class MultiLineDatasetVisualizer(ImageDataVisualizer):
             ax.axhline(line_y, linestyle="--", color=color)
             ax.text(ax.get_xlim()[0], line_y, line_name, color=color, va="bottom")
 
-        plt.title(self.title, fontsize=16, pad=20)
+        if self.title is not None:
+            plt.title(self.title, fontsize=16, pad=20)
         plt.xlabel(self.feature_renaming.get(self.x_feature, self.x_feature), fontsize=12)
         plt.ylabel(self.feature_renaming.get(self.y_feature, self.y_feature), fontsize=12)
         ax.legend(
