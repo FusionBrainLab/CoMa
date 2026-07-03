@@ -12,7 +12,7 @@ hydra:
     subdir: .
   sweeper:
     max_batch_size: 1
-
+  
 method:
   _target_: src.core.function_utils.FunctionGraph
   _convert_: all
@@ -53,23 +53,29 @@ method:
       function:
         _target_: src.save_visualizer.SaveImageVisualizer
         image_visualizer:
-          _target_: src.image_data_visualizer.MultiBarplotDatasetVisualizer
+          _target_: src.image_data_visualizer.MultiLineGridDatasetVisualizer
           dataset_key: dataset
+          x_feature: context_count
           y_feature: contextual_relevance
-          group_features:
-            - train_type
+          x_grid_feature: context_modality
+          y_grid_feature: train_type
+          line_features: 
             - model_size
-            - context_modality
           title: null
           feature_renaming:
-            train_type: Train Type
-            model_size: Model Size
-            context_modality: Context Modality
-            context_count: Context Count
-            contextual_relevance: Contextual Relevance
+            context_modality: "Context Modality"
+            train_type: "Train Type"
+            context_count: "Context Count"
+            model_size: "Model Size"
+            contextual_relevance: "Contextual Relevance"
           legend_renaming:
-            unimodal_context: Unimodal Context
-            multimodal_context: Multimodal Context
+            model_size:
+              2: 2B
+              4: 4B
+              8: 8B
+            train_type:
+              unimodal_context: "Unimodal Context"
+              multimodal_context: "Multimodal Context"
           fixed_features: {}
           horizontal_lines:
             "No Context-2B":
@@ -90,12 +96,11 @@ method:
               context_1d_count: 0
               context_2d_count: 0
               context_3d_count: 0
-          show_confidence_interval: true
+          show_confidence_interval: false
           include_horizontal_line_samples: false
-          palette: "icefire"
-          bar_width: 0.5
+          palette: "tab10"
           horizontal_lines_palette: "viridis"
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_bar.png
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_line_grid.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

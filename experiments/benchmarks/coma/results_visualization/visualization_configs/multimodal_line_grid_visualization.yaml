@@ -12,7 +12,7 @@ hydra:
     subdir: .
   sweeper:
     max_batch_size: 1
-
+  
 method:
   _target_: src.core.function_utils.FunctionGraph
   _convert_: all
@@ -37,15 +37,26 @@ method:
               context_2d_count: "int"
               context_3d_count: "int"
         preprocessor:
-          _target_: src.dataset_processor.SqueezeFeatureCreator
-          cols: [context_1d_count, context_2d_count, context_3d_count]
-          fixed_feature_values:
-            "1D Context": {context_2d_count: 0, context_3d_count: 0}
-            "2D Context": {context_1d_count: 0, context_3d_count: 0}
-            "3D Context": {context_1d_count: 0, context_2d_count: 0}
-          fixed_feature_col: context_modality
-          value_feature_col: context_count
-          filter_rows: true
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.UnsqueezeFeatureCreator
+              feature_values: [
+                {context_2d_count: 0, context_3d_count: 0},
+                {context_1d_count: 0, context_3d_count: 0},
+                {context_1d_count: 0, context_2d_count: 0}
+              ]
+              new_feature_col: inference_type
+              old_feature_value: "multimodal"
+              new_feature_value: "unimodal"
+            - _target_: src.dataset_processor.SqueezeFeatureCreator
+              cols: [context_1d_count, context_2d_count, context_3d_count]
+              fixed_feature_values:
+                "1D Context": {context_2d_count: 0, context_3d_count: 0}
+                "2D Context": {context_1d_count: 0, context_3d_count: 0}
+                "3D Context": {context_1d_count: 0, context_2d_count: 0}
+              fixed_feature_col: context_modality
+              value_feature_col: context_count
+              filter_rows: false
       output_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: dataset
@@ -53,24 +64,36 @@ method:
       function:
         _target_: src.save_visualizer.SaveImageVisualizer
         image_visualizer:
-          _target_: src.image_data_visualizer.MultiBarplotDatasetVisualizer
+          _target_: src.image_data_visualizer.MultiLineGridDatasetVisualizer
           dataset_key: dataset
+          x_feature: context_count
           y_feature: contextual_relevance
-          group_features:
-            - train_type
+          x_grid_feature: context_modality
+          y_grid_feature: train_type
+          line_features:
             - model_size
-            - context_modality
+            - inference_type
           title: null
           feature_renaming:
-            train_type: Train Type
-            model_size: Model Size
-            context_modality: Context Modality
-            context_count: Context Count
-            contextual_relevance: Contextual Relevance
+            context_count: "Context Count"
+            model_size: "Model Size"
+            context_modality: "Context Modality"
+            train_type: "Train Type"
+            inference_type: "Inference Type"
+            contextual_relevance: "Contextual Relevance"
           legend_renaming:
-            unimodal_context: Unimodal Context
-            multimodal_context: Multimodal Context
-          fixed_features: {}
+            model_size:
+              2: 2B
+              4: 4B
+              8: 8B
+            inference_type:
+              unimodal: "Unimodal"
+              multimodal: "Multimodal"
+            train_type:
+              unimodal_context: "Unimodal Context"
+              multimodal_context: "Multimodal Context"
+          fixed_features:
+            train_type: multimodal_context
           horizontal_lines:
             "No Context-2B":
               train_type: no_context
@@ -92,10 +115,9 @@ method:
               context_3d_count: 0
           show_confidence_interval: true
           include_horizontal_line_samples: false
-          palette: "icefire"
-          bar_width: 0.5
+          palette: "tab10"
           horizontal_lines_palette: "viridis"
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/crossmodal_bar.png
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_line_grid.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

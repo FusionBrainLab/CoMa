@@ -14,11 +14,10 @@ hydra:
     max_batch_size: 1
   
 x_feature: context_1d_count
-line_feature: model_size
 zero_feature_1: context_2d_count
 zero_feature_2: context_3d_count
 
-feature_renaming: "${oc.create:'{\"${x_feature}\": \"${x_feature}\", \"${line_feature}\": \"${line_feature}\", \"contextual_relevance\": \"Contextual Relevance\"}'}"
+feature_renaming: "${oc.create:'{\"${x_feature}\": \"${x_feature}\", \"model_size\": \"Model Size\", \"contextual_relevance\": \"Contextual Relevance\"}'}"
 fixed_features: "${oc.create:'{\"train_type\": \"unimodal_context\", \"${zero_feature_1}\": 0, \"${zero_feature_2}\": 0}'}"
   
 method:
@@ -54,9 +53,14 @@ method:
           x_feature: ${x_feature}
           y_feature: contextual_relevance
           line_features: 
-            - ${line_feature}
-          title: "Contextual Relevance by ${x_feature} for unimodal train"
+            - model_size
+          title: null
           feature_renaming: ${feature_renaming}
+          legend_renaming:
+            model_size:
+              2: 2B
+              4: 4B
+              8: 8B
           fixed_features: ${fixed_features}
           horizontal_lines:
             "No Context-2B":
@@ -78,8 +82,9 @@ method:
               context_2d_count: 0
               context_3d_count: 0
           show_confidence_interval: false
+          include_horizontal_line_samples: false
           palette: "tab10"
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/unimodal_multimodal_line/unimodal/${x_feature}_${line_feature}.png
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/unimodal_multimodal_line/unimodal/${x_feature}.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

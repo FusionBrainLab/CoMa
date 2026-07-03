@@ -1,5 +1,6 @@
 from typing import Any, Dict
 import io
+import os
 
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -18,7 +19,8 @@ class FeatureRangeDatasetMultiSamplesVisualizer(ImageDataVisualizer):
                         sample_visualizer: ImageDataVisualizer,
                         random_seed: int,
                         cell_size: int,
-                        dpi: int) -> None:
+                        dpi: int,
+                        samples_folder: str) -> None:
         self.feature = feature
         self.dataset_key = dataset_key
         self.ranges_count = ranges_count
@@ -29,9 +31,11 @@ class FeatureRangeDatasetMultiSamplesVisualizer(ImageDataVisualizer):
         self.random_seed = random_seed
         self.cell_size = cell_size
         self.dpi = dpi
+        self.samples_folder = samples_folder
 
     def __call__(self, *, data: Dict[str, Any]) -> Image:
         dataset = data[self.dataset_key]
+        os.makedirs(self.samples_folder, exist_ok=True)
         pd_dataset = pd.DataFrame(dataset)
         pd_dataset = pd_dataset.sort_values(self.feature).reset_index(drop=True)
         feature_min = pd_dataset[self.feature].min()
@@ -71,6 +75,7 @@ class FeatureRangeDatasetMultiSamplesVisualizer(ImageDataVisualizer):
                         sample = sampled_dataset.iloc[0].to_dict()
                         image = self.sample_visualizer(data=sample)
                         image = image.convert("RGB")
+                        image.save(os.path.join(self.samples_folder, f"{sample[self.id_col]}.png"))
                         image.thumbnail((self.cell_size, self.cell_size))
                         range_cell_data.append({
                             "image":image,

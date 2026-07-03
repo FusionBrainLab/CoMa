@@ -55,6 +55,131 @@ method:
               folder_path: ${paths.ctx}
               name_pattern: .*
               verbose: false
+          direction_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: [site_contour]
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingFootprintsMetric
+              massing_key: massing
+              reduction: mean
+              polygons_metric: {_target_: src.polygons_analyzer.DirectionPA}
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+
+          height_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: [site_contour]
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingBuildingsMetric
+              massing_key: massing
+              building_key: building
+              reduction: mean
+              wrap_to_massing: false
+              building_metric:
+                _target_: src.sample_metric.BuildingFloorCount
+                building_key: building
+                floor_height: 3.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          height_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: [site_contour]
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingBuildingsMetric
+              massing_key: massing
+              building_key: building
+              reduction: mean
+              wrap_to_massing: false
+              building_metric:
+                _target_: src.sample_metric.BuildingFloorCount
+                building_key: building
+                floor_height: 3.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          stepback_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: mean
+            massing_metric: {_target_: src.sample_metric.MassingStepbackRatio, massing_key: massing}
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+
+          exdiv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingExtrusionHeightDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          eldiv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingElevationsDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          anglediv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingAnglesDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+
           far_mean:
             _target_: src.sample_metric.MassingContextualRelevance
             massing_key: pred_massing
@@ -88,7 +213,7 @@ method:
               folder_path: ${paths.ctx}
               name_pattern: .*
               verbose: false
-          height_mean:
+          setback_mean:
             _target_: src.sample_metric.MassingContextualRelevance
             massing_key: pred_massing
             context_key: context_ids_100
@@ -96,20 +221,15 @@ method:
             id_key: id
             context_reduction: mean
             massing_metric:
-              _target_: src.sample_metric.MassingBuildingsMetric
+              _target_: src.sample_metric.MassingSetback
               massing_key: massing
-              building_key: building
-              reduction: mean
-              wrap_to_massing: false
-              building_metric:
-                _target_: src.sample_metric.BuildingFloorCount
-                building_key: building
-                floor_height: 3.0
+              site_key: site_contour
             context_dataset_loader:
               _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
               folder_path: ${paths.ctx}
               name_pattern: .*
               verbose: false
+          
           circ_nearest:
             _target_: src.sample_metric.MassingContextualRelevance
             massing_key: pred_massing
@@ -153,39 +273,7 @@ method:
               folder_path: ${paths.ctx}
               name_pattern: .*
               verbose: false
-          exdiv_nearest:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: []
-            id_key: id
-            context_reduction: nearest
-            massing_metric:
-              _target_: src.sample_metric.MassingExtrusionHeightDiversity
-              massing_key: massing
-              diversity_type: std
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          eldiv_nearest:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: []
-            id_key: id
-            context_reduction: nearest
-            massing_metric:
-              _target_: src.sample_metric.MassingElevationsDiversity
-              massing_key: massing
-              diversity_type: std
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          # ── orientation-distribution ──
+          
           frechet_orient:
             _target_: src.sample_metric.MassingContextFrechetDistance
             massing_key: pred_massing
@@ -214,91 +302,6 @@ method:
             context_key: context_ids_100
             id_key: id
             feature_subset: classic
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          # ── extra scalars ──
-          direction_mean:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: [site_contour]
-            id_key: id
-            context_reduction: mean
-            massing_metric:
-              _target_: src.sample_metric.MassingFootprintsMetric
-              massing_key: massing
-              reduction: mean
-              polygons_metric: {_target_: src.polygons_analyzer.DirectionPA}
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          height_nearest:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: [site_contour]
-            id_key: id
-            context_reduction: nearest
-            massing_metric:
-              _target_: src.sample_metric.MassingBuildingsMetric
-              massing_key: massing
-              building_key: building
-              reduction: mean
-              wrap_to_massing: false
-              building_metric:
-                _target_: src.sample_metric.BuildingFloorCount
-                building_key: building
-                floor_height: 3.0
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          setback_mean:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: [site_contour]
-            id_key: id
-            context_reduction: mean
-            massing_metric:
-              _target_: src.sample_metric.MassingSetback
-              massing_key: massing
-              site_key: site_contour
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          stepback_mean:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: []
-            id_key: id
-            context_reduction: mean
-            massing_metric: {_target_: src.sample_metric.MassingStepbackRatio, massing_key: massing}
-            context_dataset_loader:
-              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-              folder_path: ${paths.ctx}
-              name_pattern: .*
-              verbose: false
-          anglediv_nearest:
-            _target_: src.sample_metric.MassingContextualRelevance
-            massing_key: pred_massing
-            context_key: context_ids_100
-            additional_features: []
-            id_key: id
-            context_reduction: nearest
-            massing_metric:
-              _target_: src.sample_metric.MassingAnglesDiversity
-              massing_key: massing
-              diversity_type: std
             context_dataset_loader:
               _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
               folder_path: ${paths.ctx}

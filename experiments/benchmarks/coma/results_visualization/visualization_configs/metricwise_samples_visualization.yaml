@@ -315,7 +315,7 @@ method:
           dataset_key: dataset_8B
           feature: contextual_relevance
           ranges_count: 5
-          samples_count: 5
+          samples_count: 10
           id_col: id
           dataset_preprocessor:
             _target_: src.dataset_processor.CompositionProcessor
@@ -366,11 +366,12 @@ method:
             context_mesh_color: grey
             camera_distance_scale: 3
             vertical_angle: 45
-            window_size: [1024, 1024]
+            window_size: [4096, 4096]
             angle: 0
-          random_seed: 41
+          random_seed: 80
           cell_size: 256
           dpi: 150
+          samples_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples
         path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
