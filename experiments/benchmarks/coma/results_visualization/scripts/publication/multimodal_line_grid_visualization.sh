@@ -1,0 +1,2 @@
+PATH=/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/mathemage/.local/bin:$PATH HYDRA_FULL_ERROR=1 python /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/hydra_run.py \
+--config_path /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results_visualization/visualization_configs/publication/multimodal_line_grid_visualization.yaml
