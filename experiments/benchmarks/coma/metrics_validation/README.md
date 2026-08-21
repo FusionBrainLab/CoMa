@@ -72,3 +72,29 @@ python hydra_run.py \
 The artifact stores only the combiner (estimator + feature order + scaling); features
 come from `${_feature_pool}`. Swap the model or feature subset via `method.model` /
 `method.feature_set` overrides.
+
+## No-orientation ablation
+
+The orientation ablation removes the direction and explicit orientation-distribution
+features from the learned CR metric:
+
+`direction_nearest`, `direction_mean`, `frechet_orient`, `orient_kde`, and
+`frechet_classic`. The rotation-invariant `anglediv_nearest` shape feature remains.
+
+Run the full local ablation workflow from the repo root:
+
+```bash
+python experiments/benchmarks/coma/run_no_orientation_ablation.py --pull-dvc
+```
+
+This retrains `models/learned_ensemble_catboost_no_orientation.joblib`, evaluates it
+from `results/scores.npz` into `results/learned_metric_no_orientation_validation.json`, rescors any generated
+submissions available under `experiments/benchmarks/coma/methods_validation/` into
+`experiments/benchmarks/coma/results_no_orientation/`, and renders publication plots
+under `experiments/benchmarks/coma/results_visualization/visualizations_publication_no_orientation/`.
+
+If the generated submissions are not materialized locally, run the metric-only part:
+
+```bash
+python experiments/benchmarks/coma/run_no_orientation_ablation.py --pull-dvc --skip-methods --skip-visualizations
+```

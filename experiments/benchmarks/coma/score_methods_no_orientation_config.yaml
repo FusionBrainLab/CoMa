@@ -1,0 +1,30 @@
+defaults:
+  - metrics_validation/feature_pool: coma
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
+  reference_results: ${paths.base}/experiments/benchmarks/coma/results
+  submits: ${paths.base}/experiments/benchmarks/coma/methods_validation
+  results: ${paths.base}/experiments/benchmarks/coma/results_no_orientation
+  models: ${paths.base}/experiments/benchmarks/coma/metrics_validation/models
+
+method:
+  _target_: src.metric_validation.MethodGridScorer
+  _convert_: all
+  reference_results_root: ${paths.reference_results}
+  submit_root: ${paths.submits}
+  output_results_root: ${paths.results}
+  model_path: ${paths.models}/learned_ensemble_catboost_no_orientation.joblib
+  feature_metrics: ${_feature_pool}
+  metric_name: contextual_relevance
+  sample_massing_key: pred_massing
+  verbose: true

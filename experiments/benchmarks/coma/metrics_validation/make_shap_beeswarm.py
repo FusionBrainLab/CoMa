@@ -30,6 +30,8 @@ MODEL_PATH = os.path.join(HERE, "models", "learned_ensemble_catboost_all17.jobli
 SCORES_PATH = os.path.join(HERE, "results", "scores.npz")
 OUT_PATHS = [
     os.path.join(HERE, "figures", "08_shap_beeswarm.png"),
+    os.path.join(REPO, "papers", "coma", "images",
+                 "metric-selection", "08_shap_beeswarm.png"),
     os.path.join(REPO, "papers", "coma", "latex_draft", "images",
                  "metric-selection", "08_shap_beeswarm.png"),
 ]

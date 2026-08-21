@@ -17,6 +17,7 @@ from sklearn.base import clone
 
 from ..core.base import Function
 from . import _cv_utils as cv
+from .feature_sets import resolve_feature_set
 
 
 class LearnedEnsembleExperiment(Function):
@@ -42,9 +43,7 @@ class LearnedEnsembleExperiment(Function):
             print(msg, flush=True)
 
     def _resolve(self, value: Any, names: list) -> list:
-        if value is None or value == "all":
-            return list(names)
-        return [f for f in value if f in names]
+        return resolve_feature_set(value, names)
 
     def __call__(self, *, data: Dict[str, Any]) -> Dict[str, Any]:
         X, y, groups, names = data["X"], data["y"], data["groups"], data["names"]

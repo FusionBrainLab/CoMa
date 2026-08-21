@@ -1,0 +1,52 @@
+defaults:
+  - metrics_validation/feature_pool: coma
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+
+train_type: multimodal_context
+model_size: 4
+context_1d_count: 10
+context_2d_count: 1
+context_3d_count: 8
+
+paths:
+  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
+  submits: ${paths.base}/experiments/benchmarks/coma/methods_validation
+  results: ${paths.base}/experiments/benchmarks/coma/results_no_orientation
+  models: ${paths.base}/experiments/benchmarks/coma/metrics_validation/models
+
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    submit:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: ${paths.submits}/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+      name_pattern: ".*"
+      verbose: true
+  metrics:
+    contextual_relevance:
+      _target_: src.metric.SafeIgnoreSampleMerging
+      sample_metric:
+        _target_: src.sample_metric.LearnedEnsembleMetric
+        model_path: ${paths.models}/learned_ensemble_catboost_no_orientation.joblib
+        feature_metrics: ${_feature_pool}
+        sample_massing_key: pred_massing
+      results_merger:
+        _target_: src.floats_merger.Mean
+  submits_to_metrics:
+    submit:
+      - contextual_relevance
+  result_storage_path: ${paths.results}/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json
