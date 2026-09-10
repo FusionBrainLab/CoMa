@@ -1,0 +1,60 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+value_feature: context_coexposure
+value_name: Coexposure
+model_agnostic: true
+
+paths:
+  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/computed_test
+  visualizations: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkTreeDatasetLoader
+          folder_path: ${paths.test}
+          name_pattern: "*.json"
+          path_feature: inference_path
+          num_workers: 32
+        preprocessor:
+          _target_: src.dataset_processor.IdRowMeanMerger
+          id_col: inference_path
+          mean_cols:
+            - ${value_feature}
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: inference_datasets
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.MassingSimilarityHeatmapVisualizer
+          dataset_key: inference_datasets
+          path_feature: inference_path
+          value_feature: ${value_feature}
+          value_name: ${value_name}
+          model_agnostic: ${model_agnostic}
+          palette: viridis
+          value_range: [0, 1]
+          symmetric_value_range: false
+          show_positive_sign: false
+          figure_width: 20
+          row_height: 7
+          dpi: 300
+        path: ${paths.visualizations}/${value_feature}_heatmap.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data

@@ -1,0 +1,60 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  train: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/full_train
+  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/test
+  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/computed_test
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkTreeDatasetLoader
+          folder_path: ${paths.test}
+          name_pattern: "*.json"
+          path_feature: inference_path
+          num_workers: 32
+        preprocessor:
+          _target_: src.dataset_processor.MassingContextSimilarityComputer
+          train_dataset_loader:
+            _target_: src.dataset_creator.InversedJsonChunkTreeDatasetLoader
+            folder_path: ${paths.train}
+            name_pattern: "*.json"
+            path_feature: train_type
+            num_workers: 32
+          train_context_ids_col: sampled_context_ids
+          test_context_ids_col: sampled_context_ids
+          train_type_col: train_type
+          test_path_col: inference_path
+          individual_counts_col: context_individual_counts
+          cooccurrence_counts_col: context_cooccurrence_counts
+          individual_tau_col: context_individual_tau
+          cooccurrence_tau_col: context_cooccurrence_tau
+          individual_exposure_col: context_individual_exposure
+          coexposure_col: context_coexposure
+          individual_coverage_col: context_individual_coverage
+          cooccurrence_coverage_col: context_cooccurrence_coverage
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: computed_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_handler.InversedJsonChunkTreeDatasetSaver
+        folder_path: ${paths.output}
+        chunk_length: 10000
+        path_feature: inference_path
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: computed_dataset}

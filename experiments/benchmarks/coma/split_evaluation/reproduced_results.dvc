@@ -1,0 +1,6 @@
+outs:
+- md5: 84bfdc81c5efa1cb0880c169ea69a96e.dir
+  size: 58726
+  nfiles: 434
+  hash: md5
+  path: reproduced_results

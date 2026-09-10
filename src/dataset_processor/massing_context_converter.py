@@ -1,7 +1,7 @@
 from copy import deepcopy
 from pathlib import Path
 import random
-from typing import List, Any, Dict, Literal
+from typing import List, Any, Dict, Literal, Optional
 import os
 
 import pandas as pd
@@ -19,7 +19,8 @@ class MassingContextConverter(DatasetProcessor):
                         id_col: str,
                         context_type_to_counts: Dict[Literal["json", "single_image", "multi_image"], int],
                         random_seed: int,
-                        context_dataset_loader: DatasetCreator) -> None:
+                        context_dataset_loader: DatasetCreator,
+                        sampled_context_ids_col: Optional[str] = None) -> None:
         self.multi_image_col_to_folder = multi_image_col_to_folder
         self.single_image_col_to_folder = single_image_col_to_folder
         self.context_ids_col = context_ids_col
@@ -28,6 +29,7 @@ class MassingContextConverter(DatasetProcessor):
         self.id_col = id_col
         self.context_type_to_counts = context_type_to_counts
         self.random_seed = random_seed
+        self.sampled_context_ids_col = sampled_context_ids_col
         self.rng = random.Random(self.random_seed)
         context_dataset = context_dataset_loader()
         pd_context_dataset = pd.DataFrame(context_dataset)
@@ -43,11 +45,12 @@ class MassingContextConverter(DatasetProcessor):
             + [self.json_context_col]
         )
 
-        new_dataset = {k: [] for k in list(dataset.keys()) + [col for col in context_cols if col not in dataset]}
+        new_cols = context_cols + ([self.sampled_context_ids_col] if self.sampled_context_ids_col else [])
+        new_dataset = {k: [] for k in list(dataset.keys()) + [col for col in new_cols if col not in dataset]}
 
         for _, row in tqdm(base_pd_dataset.iterrows(), total=len(base_pd_dataset)):
             for col in new_dataset.keys():
-                if col in context_cols:
+                if col in new_cols:
                     new_dataset[col].append(None)
                 else:
                     new_dataset[col].append(row[col])
@@ -57,10 +60,12 @@ class MassingContextConverter(DatasetProcessor):
                     context_ids = list(row[self.context_ids_col])
                     sampled_context_ids = self.rng.sample(context_ids, self.context_type_to_counts["json"]) if len(context_ids) > self.context_type_to_counts["json"] else context_ids
                     context_massings = []
+                    existing_context_ids = []
                     building_idx = 0
                     for context_id in sampled_context_ids:
                         if context_id not in self.indexed_context_dataset.index:
                             continue
+                        existing_context_ids.append(context_id)
                         context_massing = self.indexed_context_dataset.loc[context_id][self.massing_col]
                         for building in context_massing:
                             context_building = deepcopy(building)
@@ -68,6 +73,8 @@ class MassingContextConverter(DatasetProcessor):
                             context_massings.append(context_building)
                             building_idx += 1
                     new_dataset[self.json_context_col][-1] = context_massings
+                    if self.sampled_context_ids_col:
+                        new_dataset[self.sampled_context_ids_col][-1] = existing_context_ids
             if "single_image" in self.context_type_to_counts:
                 if self.context_type_to_counts["single_image"] > 0:
                     for col, folder in self.single_image_col_to_folder.items():

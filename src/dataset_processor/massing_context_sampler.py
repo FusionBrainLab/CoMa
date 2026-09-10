@@ -1,7 +1,7 @@
 from copy import deepcopy
 from pathlib import Path
 import random
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 import os
 
 import pandas as pd
@@ -22,7 +22,8 @@ class MassingContextSampler(DatasetProcessor):
                         json_count_range: List[int],
                         random_seed: int,
                         n_samples: int,
-                        max_context_cols: int) -> None:
+                        max_context_cols: int,
+                        sampled_context_ids_col: Optional[str] = None) -> None:
         self.multi_image_col_to_folder = multi_image_col_to_folder
         self.single_image_col_to_folder = single_image_col_to_folder
         self.context_ids_col = context_ids_col
@@ -36,6 +37,7 @@ class MassingContextSampler(DatasetProcessor):
         self.random_seed = random_seed
         self.n_samples = n_samples
         self.max_context_cols = max_context_cols
+        self.sampled_context_ids_col = sampled_context_ids_col
         
     def __call__(self, *, dataset: Dict[str, List[Any]]) -> Dict[str, List[Any]]:
         base_pd_dataset = pd.DataFrame(dataset)
@@ -47,13 +49,14 @@ class MassingContextSampler(DatasetProcessor):
             + [self.json_context_col]
         )
 
-        new_dataset = {k: [] for k in list(dataset.keys()) + [col for col in context_cols if col not in dataset]}
+        new_cols = context_cols + ([self.sampled_context_ids_col] if self.sampled_context_ids_col else [])
+        new_dataset = {k: [] for k in list(dataset.keys()) + [col for col in new_cols if col not in dataset]}
         rng = random.Random(self.random_seed)
 
         for _, row in tqdm(base_pd_dataset.iterrows(), total=len(base_pd_dataset)):
             for _ in range(self.n_samples):
                 for col in new_dataset.keys():
-                    if col in context_cols:
+                    if col in new_cols:
                         new_dataset[col].append(None)
                     else:
                         new_dataset[col].append(row[col])
@@ -100,10 +103,12 @@ class MassingContextSampler(DatasetProcessor):
                 sampled_context_ids = rng.sample(context_ids, context_count) if context_count > 0 else []
 
                 context_massings = []
+                existing_context_ids = []
                 building_idx = 0
                 for context_id in sampled_context_ids:
                     if context_id not in indexed_pd_dataset.index:
                         continue
+                    existing_context_ids.append(context_id)
                     context_massing = indexed_pd_dataset.loc[context_id][self.massing_col]
                     for building in context_massing:
                         context_building = deepcopy(building)
@@ -111,5 +116,7 @@ class MassingContextSampler(DatasetProcessor):
                         context_massings.append(context_building)
                         building_idx += 1
                 new_dataset[self.json_context_col][-1] = context_massings
+                if self.sampled_context_ids_col:
+                    new_dataset[self.sampled_context_ids_col][-1] = existing_context_ids
 
         return new_dataset

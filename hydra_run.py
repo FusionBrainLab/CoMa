@@ -7,9 +7,6 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
-REPO_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(REPO_ROOT))
-
 
 def main(cfg: DictConfig):
     method = instantiate(cfg.method)
