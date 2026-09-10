@@ -1,0 +1,86 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  sweeper:
+    max_batch_size: 1
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.ValidationResultsLoader
+        results_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results
+        submit_name_to_dict_deserializer:
+          _target_: src.string_deserializer.RegexArgsDeserializer
+          args_expressions:
+            train_type: "train-(.+?)_model-"
+            model_size: "model-([0-9]+)B"
+            context_1d_count: "1d([0-9]+)"
+            context_2d_count: "2d([0-9]+)"
+            context_3d_count: "3d([0-9]+)"
+          numeric_args:
+            model_size: "int"
+            context_1d_count: "int"
+            context_2d_count: "int"
+            context_3d_count: "int"
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveFigureVisualizer
+        figure_visualizer:
+          _target_: src.figure_data_visualizer.ContourHeatmapGridFigureVisualizer
+          dataset_key: dataset
+          x_feature: context_1d_count
+          y_feature: context_3d_count
+          value_feature: contextual_relevance
+          x_grid_feature: model_size
+          y_grid_feature: context_2d_count
+          title: null
+          feature_renaming:
+            context_1d_count: "1D Context"
+            context_3d_count: "3D Context"
+            model_size: "Model Size"
+            context_2d_count: "2D Context count"
+            contextual_relevance: "Contextual Relevance"
+          palette: "viridis"
+          fixed_features:
+            train_type: multimodal_context
+          figure_width_inches: 5.4567
+          figure_height_inches: 3.7
+          contour_levels: 10
+          smoothing_resolution: 150
+          value_format: ".2f"
+          strip_annotation_leading_zero: true
+          show_value_annotations: true
+          tick_font_size: 7.0
+          label_font_size: 8.0
+          panel_title_font_size: 8.5
+          annotation_font_size: 6.0
+          column_title_template: "{feature}={value}"
+          row_title_template: "{feature}={value}"
+          colorbar_width_fraction: 0.04
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results_visualization/visualizations_publication/multimodal_contour_grid
+        formats: ["pgf", "pdf", "png"]
+        dpi: 600.0
+        font_family: "sans-serif"
+        pgf_texsystem: "pdflatex"
+        pgf_preamble:
+          - "\\usepackage[utf8]{inputenc}"
+          - "\\usepackage[T1]{fontenc}"
+          - "\\usepackage{lmodern}"
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data

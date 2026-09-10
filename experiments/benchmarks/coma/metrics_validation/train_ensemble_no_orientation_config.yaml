@@ -1,0 +1,51 @@
+defaults:
+  - feature_pool: coma
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
+  val: ${paths.base}/experiments/benchmarks/coma/metrics_validation/dataset
+  results: ${paths.base}/experiments/benchmarks/coma/metrics_validation/results
+  models: ${paths.base}/experiments/benchmarks/coma/metrics_validation/models
+
+method:
+  _target_: src.metric_validation.LearnedEnsembleTrainer
+  _convert_: all
+  model_output_path: ${paths.models}/learned_ensemble_catboost_no_orientation.joblib
+  feature_set: no_orientation
+  report_cv: true
+  n_splits: 5
+
+  feature_matrix:
+    _target_: src.metric_validation.FeatureScoreMatrix
+    label_key: label
+    group_key: id
+    cache_path: ${paths.results}/scores.npz
+    force_rescore: false
+    submit_loader:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: ${paths.val}
+      name_pattern: .*
+      verbose: true
+    feature_metrics: ${_feature_pool}
+
+  model:
+    _target_: src.metric_validation.EnsembleModel
+    standardize: false
+    estimator:
+      _target_: catboost.CatBoostClassifier
+      depth: 4
+      learning_rate: 0.1
+      iterations: 400
+      loss_function: Logloss
+      random_seed: 0
+      verbose: false
+      allow_writing_files: false

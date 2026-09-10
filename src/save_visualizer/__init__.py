@@ -3,7 +3,8 @@ __all__ = [
     "FocusMeshHtmlVisualizer",
     "KeplerglPolygonsHtmlVisualizer",
     "KeplerglMultiPolygonsHtmlVisualizer",
-    "SaveImageVisualizer"
+    "SaveImageVisualizer",
+    "SaveFigureVisualizer"
 ]
 
 _LAZY_IMPORTS = {
@@ -12,6 +13,7 @@ _LAZY_IMPORTS = {
     "KeplerglPolygonsHtmlVisualizer": (".keplergl_polygons_html_visualizer", "KeplerglPolygonsHtmlVisualizer"),
     "KeplerglMultiPolygonsHtmlVisualizer": (".keplergl_multi_polygons_html_visualizer", "KeplerglMultiPolygonsHtmlVisualizer"),
     "SaveImageVisualizer": (".save_image_visualizer", "SaveImageVisualizer"),
+    "SaveFigureVisualizer": (".save_figure_visualizer", "SaveFigureVisualizer"),
 }
 
 def __getattr__(name: str):

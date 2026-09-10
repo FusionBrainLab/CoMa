@@ -29,6 +29,8 @@ from metric_labels import LABELS, GROUP, GROUP_COLOR, GROUP_LABEL  # noqa: E402
 RESULTS_PATH = os.path.join(HERE, "results", "consolidated_results.json")
 OUT_PATHS = [
     os.path.join(HERE, "figures", "10_metric_overview.png"),
+    os.path.join(REPO, "papers", "coma", "images",
+                 "metric-selection", "10_metric_overview.png"),
     os.path.join(REPO, "papers", "coma", "latex_draft", "images",
                  "metric-selection", "10_metric_overview.png"),
 ]

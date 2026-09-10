@@ -15,7 +15,7 @@ LABELS = {
     "height_mean":       r"$\mathrm{Hgt}_\mathrm{mean}$",
     "circ_nearest":      r"$\mathrm{Circ}_\mathrm{near}$",
     "elong_mean":        r"$\mathrm{Elo}_\mathrm{mean}$",
-    "courtyard_mean":    r"$\mathrm{Crt}_\mathrm{mean}$",
+    "courtyard_mean":    r"$\mathrm{Conc}_\mathrm{mean}$",
     "exdiv_nearest":     r"$\mathrm{ExD}_\mathrm{near}$",
     "eldiv_nearest":     r"$\mathrm{ElD}_\mathrm{near}$",
     "frechet_orient":    r"$\mathrm{Fr}_\mathrm{orient}$",

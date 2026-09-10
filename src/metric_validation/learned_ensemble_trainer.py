@@ -17,6 +17,7 @@ from sklearn.base import clone
 from ..core.base import Function
 from ..sample_metric.learned_ensemble_metric import save_ensemble_artifact
 from . import _cv_utils as cv
+from .feature_sets import resolve_feature_set
 
 
 class LearnedEnsembleTrainer(Function):
@@ -43,10 +44,7 @@ class LearnedEnsembleTrainer(Function):
         data = self.feature_matrix()
         X, y, groups, names = data["X"], data["y"], data["groups"], data["names"]
 
-        if self.feature_set is None or self.feature_set == "all":
-            feats = list(names)
-        else:
-            feats = [f for f in self.feature_set if f in names]
+        feats = resolve_feature_set(self.feature_set, names)
         cols = [names.index(f) for f in feats]
         Xs = X[:, cols]
         self._log("LearnedEnsembleTrainer: %d samples × %d features %s"

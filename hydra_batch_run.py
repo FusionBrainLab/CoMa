@@ -10,8 +10,8 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-HYDRA_RUN_PATH = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/hydra_run.py"
-sys.path.append("/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation")
+HYDRA_RUN_PATH = str(SCRIPT_DIR / "hydra_run.py")
+sys.path.insert(0, str(SCRIPT_DIR))
 BASE_CONFIG = ""
 
 

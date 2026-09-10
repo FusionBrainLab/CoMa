@@ -13,6 +13,7 @@ __all__ = [
     "FeatureAnalysisExperiment",
     "MetricFiguresRenderer",
     "MetricsValidationExperiment",
+    "MethodGridScorer",
 ]
 
 _LAZY_IMPORTS = {
@@ -23,6 +24,7 @@ _LAZY_IMPORTS = {
     "FeatureAnalysisExperiment": (".feature_analysis_experiment", "FeatureAnalysisExperiment"),
     "MetricFiguresRenderer": (".metric_figures_renderer", "MetricFiguresRenderer"),
     "MetricsValidationExperiment": (".metrics_validation_experiment", "MetricsValidationExperiment"),
+    "MethodGridScorer": (".method_grid_scorer", "MethodGridScorer"),
 }
 
 

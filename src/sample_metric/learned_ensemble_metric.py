@@ -41,13 +41,15 @@ def load_ensemble_artifact(path: str) -> Dict[str, Any]:
 
 class LearnedEnsembleMetric(SampleMetric):
     def __init__(self, *, feature_metrics: Dict[str, Any],
-                        model_path: str) -> None:
+                        model_path: str,
+                        sample_massing_key: str = "massing") -> None:
         art = load_ensemble_artifact(model_path)
         self.estimator = art["estimator"]
         self.feature_names = list(art["feature_names"])
         self.standardize = bool(art["standardize"])
         self.mean = None if art["mean"] is None else np.asarray(art["mean"], dtype=float)
         self.std = None if art["std"] is None else np.asarray(art["std"], dtype=float)
+        self.sample_massing_key = sample_massing_key
         # Instantiate only the features the trained model needs (factories or instances).
         self.features = {}
         for name in self.feature_names:
@@ -57,6 +59,8 @@ class LearnedEnsembleMetric(SampleMetric):
             self.features[name] = entry() if isinstance(entry, functools.partial) else entry
 
     def __call__(self, *, sample: Dict[str, Any]) -> float:
+        if self.sample_massing_key != "massing":
+            sample = {**sample, "massing": sample[self.sample_massing_key]}
         x = np.empty(len(self.feature_names), dtype=float)
         for i, name in enumerate(self.feature_names):
             x[i] = float(self.features[name](sample=sample))

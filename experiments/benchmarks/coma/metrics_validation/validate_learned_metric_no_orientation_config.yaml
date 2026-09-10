@@ -1,0 +1,47 @@
+defaults:
+  - feature_pool: coma
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
+  val: ${paths.base}/experiments/benchmarks/coma/metrics_validation/dataset
+  results: ${paths.base}/experiments/benchmarks/coma/metrics_validation/results
+  models: ${paths.base}/experiments/benchmarks/coma/metrics_validation/models
+
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    target_dataset:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: ${paths.val}
+      name_pattern: .*
+      verbose: true
+  metrics:
+    LearnedEnsembleNoOrientationROCAUC:
+      _target_: src.metric.SampleMetricROCAUC
+      gt_label_key: label
+      sample_metric:
+        _target_: src.sample_metric.LearnedEnsembleMetric
+        model_path: ${paths.models}/learned_ensemble_catboost_no_orientation.joblib
+        feature_metrics: ${_feature_pool}
+    LearnedEnsembleNoOrientationF1:
+      _target_: src.metric.SampleMetricF1
+      gt_label_key: label
+      sample_metric:
+        _target_: src.sample_metric.LearnedEnsembleMetric
+        model_path: ${paths.models}/learned_ensemble_catboost_no_orientation.joblib
+        feature_metrics: ${_feature_pool}
+  submits_to_metrics:
+    target_dataset:
+      - LearnedEnsembleNoOrientationROCAUC
+      - LearnedEnsembleNoOrientationF1
+  result_storage_path: ${paths.results}/learned_metric_no_orientation_validation.json
