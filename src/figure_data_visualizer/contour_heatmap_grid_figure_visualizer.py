@@ -183,6 +183,9 @@ class ContourHeatmapGridFigureVisualizer(FigureDataVisualizer):
             ],
             label_font_size=self.label_font_size,
             panel_title_font_size=self.panel_title_font_size,
+            # Tighter than apply_grid_labels' default (-0.62): the row title only needs to
+            # clear the y-axis tick labels, and the reclaimed margin goes to the panels.
+            row_title_offset=-0.33,
         )
         colorbar = figure.colorbar(
             plt.cm.ScalarMappable(norm=normalization, cmap=self.palette),

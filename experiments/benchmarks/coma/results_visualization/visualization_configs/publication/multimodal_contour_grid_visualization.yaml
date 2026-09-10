@@ -58,12 +58,15 @@ method:
           palette: "viridis"
           fixed_features:
             train_type: multimodal_context
+          # Original authoring scale and font sizes, unchanged. The only extra width the
+          # panels get comes from ContourHeatmapGridFigureVisualizer's tighter row-title
+          # margin, which reclaims otherwise-empty space to the left of the grid.
           figure_width_inches: 5.4567
           figure_height_inches: 3.7
           contour_levels: 10
           smoothing_resolution: 150
           value_format: ".2f"
-          strip_annotation_leading_zero: true
+          strip_annotation_leading_zero: false
           show_value_annotations: true
           tick_font_size: 7.0
           label_font_size: 8.0

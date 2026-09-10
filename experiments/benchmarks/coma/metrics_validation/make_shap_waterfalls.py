@@ -39,7 +39,8 @@ SCORES_PATH = os.path.join(HERE, "results", "scores.npz")
 # below identical to the point sizes the reader sees on paper.
 TEXT_WIDTH_INCHES = 5.4567
 FIGURE_HEIGHT_INCHES = 3.65
-FORMATS = ("pgf", "pdf", "png")
+# pgf must be last: see save_all_formats.
+FORMATS = ("pdf", "png", "pgf")
 EXPORT_DPI = 600.0
 
 # shap hardcodes 12pt/13pt against an 8in canvas; these are those sizes brought down to
@@ -84,7 +85,8 @@ def ascii_minus(text):
     """shap formats numbers with U+2212, which plain inputenc cannot typeset.
 
     Keeping the pgf free of it lets the paper ``\\input`` the figure without adding a
-    ``\\DeclareUnicodeCharacter`` line to its preamble.
+    ``\\DeclareUnicodeCharacter`` line to its preamble. The raster/vector-PDF exports
+    aren't compiled by LaTeX, so they keep shap's real minus sign (U+2212) instead.
     """
     text.set_text(text.get_text().replace("\u2212", "-"))
 
@@ -94,9 +96,15 @@ def restyle_waterfall(fig, title):
     ax, base_axis, prediction_axis = fig.axes[0], fig.axes[1], fig.axes[2]
     fig.set_size_inches(TEXT_WIDTH_INCHES, FIGURE_HEIGHT_INCHES)
 
+    # Every manually-set label below carries shap's own U+2212 minus sign. That reads
+    # correctly in the raster/vector-PDF exports as-is; only the pgf export (compiled by
+    # plain-inputenc LaTeX) needs it downgraded to ASCII, which save_all_formats does to
+    # this same list right before writing that one format.
+    minus_bearing_texts = []
+
     for text in ax.texts:
         text.set_fontsize(BAR_VALUE_SIZE)
-        ascii_minus(text)
+        minus_bearing_texts.append(text)
         # White labels sit on a saturated bar and already contrast; the rest are drawn
         # on the white background in the bar's own colour and need deepening.
         if to_rgb(text.get_color()) != (1.0, 1.0, 1.0):
@@ -104,7 +112,7 @@ def restyle_waterfall(fig, title):
 
     for label in ax.get_yticklabels():
         label.set_fontsize(FEATURE_LABEL_SIZE)
-        ascii_minus(label)
+        minus_bearing_texts.append(label)
         # Every row carries two overlaid labels: the feature name in black over the
         # feature value in grey. Only the grey one needs deepening.
         if luminance(label.get_color()) > SECONDARY_TEXT_LUMINANCE:
@@ -125,7 +133,7 @@ def restyle_waterfall(fig, title):
                 labels, shap_offsets, alignments, wanted_offsets):
             label.set_fontsize(ENDPOINT_LABEL_SIZE)
             label.set_horizontalalignment(alignment)
-            ascii_minus(label)
+            minus_bearing_texts.append(label)
             label.set_transform(label.get_transform() + ScaledTranslation(
                 (wanted - shap_offset) / 72.0, 0, fig.dpi_scale_trans))
         labels[1].set_color(SECONDARY_TEXT_COLOR)
@@ -133,6 +141,7 @@ def restyle_waterfall(fig, title):
     ax.set_title(title, fontsize=TITLE_SIZE, pad=6.0)
     fit_endpoint_labels(fig, ax, (base_axis, prediction_axis))
     reflow_overflowing_bar_labels(fig, ax)
+    return minus_bearing_texts
 
 
 def fit_endpoint_labels(fig, ax, annotation_axes):
@@ -179,7 +188,7 @@ def reflow_overflowing_bar_labels(fig, ax):
         if arrow is None:
             continue
         corners = sorted({round(float(x), 9) for x, _ in arrow.get_xy()})
-        positive = not text.get_text().lstrip().startswith("-")
+        positive = not text.get_text().lstrip().startswith(("-", "−"))
         tip, head_base = (corners[-1], corners[-2]) if positive else (corners[0], corners[1])
         head = abs(tip - head_base)
         shaft = abs(corners[-1] - corners[0]) - 2.0 * head
@@ -191,19 +200,24 @@ def reflow_overflowing_bar_labels(fig, ax):
         text.set_color(darken(arrow.get_facecolor(), OUTSIDE_LABEL_DARKENING))
 
 
-def save_all_formats(fig, tag):
+def save_all_formats(fig, tag, minus_bearing_texts):
+    # pgf goes last: it's the only format that needs the manually-set labels (and the
+    # auto-drawn axis ticks, via axes.unicode_minus) downgraded to an ASCII hyphen, and
+    # that downgrade is applied in place, so the unicode-minus formats must render first.
     for figure_format in FORMATS:
         rc_params = {
             "figure.dpi": EXPORT_DPI,
             "savefig.dpi": EXPORT_DPI,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
-            "axes.unicode_minus": False,
+            "axes.unicode_minus": figure_format != "pgf",
         }
         if figure_format == "pgf":
             rc_params["pgf.texsystem"] = "pdflatex"
             rc_params["pgf.rcfonts"] = False
             rc_params["pgf.preamble"] = "\n".join(PGF_PREAMBLE)
+            for text in minus_bearing_texts:
+                ascii_minus(text)
         with matplotlib.rc_context(rc_params):
             for out in out_paths(tag, figure_format):
                 os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -242,8 +256,8 @@ def main() -> None:
         )
         shap.plots.waterfall(expl, max_display=10, show=False)
         fig = plt.gcf()
-        restyle_waterfall(fig, f"{title}  ($\\hat p$={proba[i]:.2f})")
-        save_all_formats(fig, tag)
+        minus_bearing_texts = restyle_waterfall(fig, f"{title}  ($\\hat p$={proba[i]:.2f})")
+        save_all_formats(fig, tag, minus_bearing_texts)
         plt.close(fig)
 
 
