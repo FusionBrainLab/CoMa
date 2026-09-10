@@ -1,0 +1,82 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+train_type: multimodal_context
+model_size: 4
+context_1d_count: 10
+context_2d_count: 1
+context_3d_count: 8
+
+paths:
+  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/splits/test
+  context_massings: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/massings
+  mesh_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/mesh_images
+  map_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/map_images
+  submit: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/test/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.MergeDatasetCreator
+        base_creators:
+          submit:
+            _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+            folder_path: ${paths.submit}
+            name_pattern: ".*"
+            verbose: true
+          test_dataset:
+            _target_: src.dataset_creator.PreprocessDatasetCreator
+            base_creator:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.test}
+              name_pattern: ".*"
+              verbose: true
+            preprocessor:
+              _target_: src.dataset_processor.MassingContextConverter
+              multi_image_col_to_folder:
+                3d_context: ${paths.mesh_images}
+              single_image_col_to_folder:
+                2d_context: ${paths.map_images}
+              context_ids_col: context_ids_100
+              json_context_col: 1d_context
+              massing_col: massing
+              id_col: id
+              context_type_to_counts:
+                json: ${context_1d_count}
+                single_image: ${context_2d_count}
+                multi_image: ${context_3d_count}
+              random_seed: 42
+              sampled_context_ids_col: sampled_context_ids
+              context_dataset_loader:
+                _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+                folder_path: ${paths.context_massings}
+                name_pattern: ".*"
+                verbose: true
+        merger:
+          _target_: src.dataset_merger.KeyDatasetJoiner
+          key_col: id
+          how: left
+          dataset_cols:
+            test_dataset: [sampled_context_ids]
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: reproduced_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
+        folder_path: ${paths.output}
+        chunk_length: 10000
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: reproduced_dataset}

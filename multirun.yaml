@@ -1,0 +1,443 @@
+hydra:
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: 1
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    root:
+      level: ERROR
+    disable_existing_loggers: true
+  job_logging:
+    version: 1
+    root:
+      level: ERROR
+    disable_existing_loggers: true
+  env: {}
+  mode: MULTIRUN
+  searchpath: []
+  callbacks: {}
+  output_subdir: null
+  overrides:
+    hydra:
+    - hydra.mode=MULTIRUN
+    task:
+    - model_size=2,4,8
+    - train_type=unimodal_context
+    - context_1d_count=0
+    - context_2d_count=0
+    - context_3d_count=0,2,4,6,8
+    - validation_type=lower
+  job:
+    name: hydra_run
+    chdir: null
+    override_dirname: context_1d_count=0,context_2d_count=0,context_3d_count=0,2,4,6,8,model_size=2,4,8,train_type=unimodal_context,validation_type=lower
+    id: ???
+    num: ???
+    config_name: validation_config
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.3
+    version_base: '1.3'
+    cwd: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_results
+      schema: file
+      provider: main
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: ???
+    choices:
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: disabled
+      hydra/hydra_logging: disabled
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false
+train_type: unimodal_context
+model_size: 4
+context_1d_count: 0
+context_2d_count: 0
+context_3d_count: 8
+validation_type: lower
+paths:
+  ctx: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/massings
+method:
+  _target_: src.validator.Validator
+  _convert_: all
+  submit_loaders:
+    submit:
+      _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/filtered_test/${validation_type}_20/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+      name_pattern: .*
+      verbose: true
+  metrics:
+    contextual_relevance:
+      _target_: src.metric.SafeIgnoreSampleMerging
+      sample_metric:
+        _target_: src.sample_metric.LearnedEnsembleMetric
+        model_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/metrics_validation/models/learned_ensemble_catboost_all17.joblib
+        feature_metrics:
+          direction_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingFootprintsMetric
+              massing_key: massing
+              reduction: mean
+              polygons_metric:
+                _target_: src.polygons_analyzer.DirectionPA
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          direction_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingFootprintsMetric
+              massing_key: massing
+              reduction: mean
+              polygons_metric:
+                _target_: src.polygons_analyzer.DirectionPA
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          height_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingBuildingsMetric
+              massing_key: massing
+              building_key: building
+              reduction: mean
+              wrap_to_massing: false
+              building_metric:
+                _target_: src.sample_metric.BuildingFloorCount
+                building_key: building
+                floor_height: 3.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          height_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingBuildingsMetric
+              massing_key: massing
+              building_key: building
+              reduction: mean
+              wrap_to_massing: false
+              building_metric:
+                _target_: src.sample_metric.BuildingFloorCount
+                building_key: building
+                floor_height: 3.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          stepback_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingStepbackRatio
+              massing_key: massing
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          exdiv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingExtrusionHeightDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          eldiv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingElevationsDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          anglediv_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingAnglesDiversity
+              massing_key: massing
+              diversity_type: std
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          far_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingFloorAreaRatio
+              massing_key: massing
+              site_key: site_contour
+              floor_height: 3.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          coverage_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingCoverage
+              massing_key: massing
+              site_key: site_contour
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          setback_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingSetback
+              massing_key: massing
+              site_key: site_contour
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          circ_nearest:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features:
+            - site_contour
+            id_key: id
+            context_reduction: nearest
+            massing_metric:
+              _target_: src.sample_metric.MassingFootprintsMetric
+              massing_key: massing
+              reduction: mean
+              polygons_metric:
+                _target_: src.polygons_analyzer.CircularityPA
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          elong_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingElongation
+              massing_key: massing
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          courtyard_mean:
+            _target_: src.sample_metric.MassingContextualRelevance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            additional_features: []
+            id_key: id
+            context_reduction: mean
+            massing_metric:
+              _target_: src.sample_metric.MassingCourtyardRatio
+              massing_key: massing
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          frechet_orient:
+            _target_: src.sample_metric.MassingContextFrechetDistance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            id_key: id
+            feature_subset: orientation
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          orient_kde:
+            _target_: src.sample_metric.MassingOrientationHistMatch
+            massing_key: pred_massing
+            context_key: context_ids_100
+            id_key: id
+            bandwidth_factor: 2.0
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+          frechet_classic:
+            _target_: src.sample_metric.MassingContextFrechetDistance
+            massing_key: pred_massing
+            context_key: context_ids_100
+            id_key: id
+            feature_subset: classic
+            context_dataset_loader:
+              _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+              folder_path: ${paths.ctx}
+              name_pattern: .*
+              verbose: false
+      results_merger:
+        _target_: src.floats_merger.Mean
+  submits_to_metrics:
+    submit:
+    - contextual_relevance
+  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_results/${validation_type}_results/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json

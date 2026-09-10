@@ -6,13 +6,15 @@ __all__ = [
     "InversedJsonDatasetLoader",
     "PartialDatasetLoader",
     "InversedJsonChunkDatasetLoader",
+    "InversedJsonChunkTreeDatasetLoader",
     "InversedJsonChunkPreprocessDatasetLoader",
     "MemoryDatasetLoader",
     "OSMBuildingsCreator",
     "OSMRegionsCreator",
     "CoMaRegionsCreator",
     "CoMaBuildingsCreator",
-    "ValidationResultsLoader"
+    "ValidationResultsLoader",
+    "MergeDatasetCreator"
 ]
 
 _LAZY_IMPORTS = {
@@ -23,13 +25,15 @@ _LAZY_IMPORTS = {
     "InversedJsonDatasetLoader": (".inversed_json_dataset_loader", "InversedJsonDatasetLoader"),
     "PartialDatasetLoader": (".partial_dataset_loader", "PartialDatasetLoader"),
     "InversedJsonChunkDatasetLoader": (".inversed_json_chunk_dataset_loader", "InversedJsonChunkDatasetLoader"),
+    "InversedJsonChunkTreeDatasetLoader": (".inversed_json_chunk_tree_dataset_loader", "InversedJsonChunkTreeDatasetLoader"),
     "InversedJsonChunkPreprocessDatasetLoader": (".inversed_json_chunk_preprocess_dataset_loader", "InversedJsonChunkPreprocessDatasetLoader"),
     "MemoryDatasetLoader": (".memory_dataset_loader", "MemoryDatasetLoader"),
     "OSMBuildingsCreator": (".osm_buildings_creator", "OSMBuildingsCreator"),
     "OSMRegionsCreator": (".osm_regions_creator", "OSMRegionsCreator"),
     "CoMaRegionsCreator": (".coma_regions_creator", "CoMaRegionsCreator"),
     "CoMaBuildingsCreator": (".coma_buildings_creator", "CoMaBuildingsCreator"),
-    "ValidationResultsLoader": (".validation_results_loader", "ValidationResultsLoader")
+    "ValidationResultsLoader": (".validation_results_loader", "ValidationResultsLoader"),
+    "MergeDatasetCreator": (".merge_dataset_creator", "MergeDatasetCreator")
 }
 
 def __getattr__(name: str):

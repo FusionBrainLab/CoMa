@@ -13,6 +13,10 @@ hydra:
   sweeper:
     max_batch_size: 1
   
+paths:
+  results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results
+  image: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_contour_grid.png
+
 method:
   _target_: src.core.function_utils.FunctionGraph
   _convert_: all
@@ -20,7 +24,7 @@ method:
     - _target_: src.core.function_utils.FunctionWrapper
       function:
         _target_: src.dataset_creator.ValidationResultsLoader
-        results_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results
+        results_folder: ${paths.results}
         submit_name_to_dict_deserializer:
           _target_: src.string_deserializer.RegexArgsDeserializer
           args_expressions:
@@ -58,7 +62,7 @@ method:
           palette: "viridis"
           fixed_features:
             train_type: multimodal_context
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_contour_grid.png
+        path: ${paths.image}
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

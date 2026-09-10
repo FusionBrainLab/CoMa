@@ -1,0 +1,129 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+validation_type: lower
+metric_name: Contextual relevance change
+
+paths:
+  full_results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/results
+  subset_results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_results/${validation_type}_results
+  visualizations: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations
+
+result_deserializer:
+  _target_: src.string_deserializer.RegexArgsDeserializer
+  args_expressions:
+    train_type: "train-(.+?)_model-"
+    model_size: "model-([0-9]+)B"
+    context_1d_count: "1d([0-9]+)"
+    context_2d_count: "2d([0-9]+)"
+    context_3d_count: "3d([0-9]+)"
+  numeric_args:
+    model_size: int
+    context_1d_count: int
+    context_2d_count: int
+    context_3d_count: int
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.MergeDatasetCreator
+        base_creators:
+          subset:
+            _target_: src.dataset_creator.PreprocessDatasetCreator
+            base_creator:
+              _target_: src.dataset_creator.ValidationResultsLoader
+              results_folder: ${paths.subset_results}
+              submit_name_to_dict_deserializer: ${result_deserializer}
+              deserialize_filename: true
+            preprocessor:
+              _target_: src.dataset_processor.FunctionProcessor
+              function:
+                _target_: src.interpretable_function.InterpretableFunction
+                function: "f'{train_type}|{model_size}|{context_1d_count}|{context_2d_count}|{context_3d_count}'"
+                returns_output: true
+              cols_to_args_mapping:
+                train_type: train_type
+                model_size: model_size
+                context_1d_count: context_1d_count
+                context_2d_count: context_2d_count
+                context_3d_count: context_3d_count
+              output_key: config_id
+          full:
+            _target_: src.dataset_creator.PreprocessDatasetCreator
+            base_creator:
+              _target_: src.dataset_creator.ValidationResultsLoader
+              results_folder: ${paths.full_results}
+              submit_name_to_dict_deserializer: ${result_deserializer}
+              deserialize_filename: true
+            preprocessor:
+              _target_: src.dataset_processor.FunctionProcessor
+              function:
+                _target_: src.interpretable_function.InterpretableFunction
+                function: "f'{train_type}|{model_size}|{context_1d_count}|{context_2d_count}|{context_3d_count}'"
+                returns_output: true
+              cols_to_args_mapping:
+                train_type: train_type
+                model_size: model_size
+                context_1d_count: context_1d_count
+                context_2d_count: context_2d_count
+                context_3d_count: context_3d_count
+              output_key: config_id
+        merger:
+          _target_: src.dataset_merger.KeyDatasetJoiner
+          key_col: config_id
+          how: inner
+          dataset_cols:
+            full:
+              - contextual_relevance
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: merged_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_processor.FunctionProcessor
+        function:
+          _target_: src.interpretable_function.InterpretableFunction
+          function: "subset_value - full_value"
+          returns_output: true
+        cols_to_args_mapping:
+          contextual_relevance: subset_value
+          contextual_relevance_full: full_value
+        output_key: contextual_relevance_delta
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: merged_dataset}
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: delta_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.MassingSimilarityHeatmapVisualizer
+          dataset_key: delta_dataset
+          path_feature: null
+          value_feature: contextual_relevance_delta
+          value_name: ${metric_name}
+          model_agnostic: false
+          palette: coolwarm
+          value_range: [-0.04, 0.04]
+          symmetric_value_range: false
+          show_positive_sign: true
+          figure_width: 20
+          row_height: 7
+          dpi: 600
+          font_size: 20
+        path: ${paths.visualizations}/${validation_type}_contextual_relevance_delta_heatmap.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data
