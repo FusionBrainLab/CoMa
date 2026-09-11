@@ -1,0 +1,150 @@
+defaults:
+  - memory_creator@multimodal_memory_creator: multimodal_context
+  - memory_creator@unimodal_memory_creator: unimodal_context
+  - processor@processor: qwen3_8b
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  searchpath:
+    - file:///mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/training/coma/qwen3/configs
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  train: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/splits/train
+  mesh_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/mesh_images
+  map_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/map_images
+  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: ${paths.train}
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.MassingContextSampler
+              multi_image_col_to_folder:
+                3d_context: ${paths.mesh_images}
+              single_image_col_to_folder:
+                2d_context: ${paths.map_images}
+              context_ids_col: context_ids_100
+              json_context_col: 1d_context
+              massing_col: massing
+              id_col: id
+              context_col_probs:
+                1d_context: 0.5
+                2d_context: 0.5
+                3d_context: 0.5
+              no_context_prob: 0.1
+              multi_image_count_ranges:
+                3d_context: [1, 8]
+              json_count_range: [1, 10]
+              random_seed: 42
+              n_samples: 100
+              max_context_cols: 3
+              sampled_context_ids_col: sampled_context_ids
+            - _target_: src.dataset_processor.JsonStringDumper
+              cols: [site_contour, massing, 1d_context]
+            - ${multimodal_memory_creator}
+            - _target_: src.dataset_processor.ModalityEstimationTokensCountFilter
+              memory_col: memories
+              memory_tokenizer: ${processor}
+              ids_key: input_ids
+              max_tokens: 32000
+              modality_estimations:
+                image: 256
+              parallelize: 12
+            - _target_: src.dataset_processor.ShuffleProcessor
+              random_seed: 42
+            - _target_: src.dataset_processor.IdRowListMerger
+              id_col: id
+              list_cols: [sampled_context_ids]
+            - _target_: src.dataset_processor.ColumnDrop
+              cols: [memories, 1d_context, 2d_context, 3d_context]
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: multimodal_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
+        folder_path: ${paths.output}/multimodal_context
+        chunk_length: 10000
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: multimodal_dataset}
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+          folder_path: ${paths.train}
+          name_pattern: ".*"
+          verbose: true
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.MassingContextSampler
+              multi_image_col_to_folder:
+                3d_context: ${paths.mesh_images}
+              single_image_col_to_folder:
+                2d_context: ${paths.map_images}
+              context_ids_col: context_ids_100
+              json_context_col: 1d_context
+              massing_col: massing
+              id_col: id
+              context_col_probs:
+                1d_context: 0.5
+                2d_context: 0.5
+                3d_context: 0.5
+              no_context_prob: 0.1
+              multi_image_count_ranges:
+                3d_context: [1, 8]
+              json_count_range: [1, 10]
+              random_seed: 42
+              n_samples: 100
+              max_context_cols: 1
+              sampled_context_ids_col: sampled_context_ids
+            - _target_: src.dataset_processor.JsonStringDumper
+              cols: [site_contour, massing, 1d_context]
+            - ${unimodal_memory_creator}
+            - _target_: src.dataset_processor.ModalityEstimationTokensCountFilter
+              memory_col: memories
+              memory_tokenizer: ${processor}
+              ids_key: input_ids
+              max_tokens: 32000
+              modality_estimations:
+                image: 256
+              parallelize: 12
+            - _target_: src.dataset_processor.ShuffleProcessor
+              random_seed: 42
+            - _target_: src.dataset_processor.IdRowListMerger
+              id_col: id
+              list_cols: [sampled_context_ids]
+            - _target_: src.dataset_processor.ColumnDrop
+              cols: [memories, 1d_context, 2d_context, 3d_context]
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {}
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: unimodal_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
+        folder_path: ${paths.output}/unimodal_context
+        chunk_length: 10000
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: unimodal_dataset}

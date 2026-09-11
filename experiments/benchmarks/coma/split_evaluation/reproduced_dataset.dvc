@@ -1,0 +1,6 @@
+outs:
+- md5: 0a12591deb49c1772a44b52ffe825d94.dir
+  size: 16065238748
+  nfiles: 891
+  hash: md5
+  path: reproduced_dataset

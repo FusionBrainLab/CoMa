@@ -1,0 +1,48 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.MassingContextSplitVisualizer
+          train_dataset_loader:
+            _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+            folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train/multimodal_context
+            name_pattern: ".*"
+            verbose: true
+          test_dataset_loader:
+            _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
+            folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/merged_test
+            name_pattern: ".*"
+            verbose: true
+          id_col: id
+          train_context_ids_col: sampled_context_ids
+          test_context_ids_col: sampled_context_ids
+          site_contour_col: site_contour
+          base_point_col: base_point
+          category_colors:
+            1: "#377eb8"
+            2: "#4daf4a"
+            3: "#ff7f00"
+            4: "#e41a1c"
+          window_size: [4096, 4096]
+          map_type: open-street-map
+          from_crs: EPSG:3857
+          zoom_level: 17
+          render_timeout: 600
+        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations/split_visualization.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data

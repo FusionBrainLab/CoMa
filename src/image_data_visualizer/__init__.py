@@ -16,7 +16,10 @@ __all__ = [
     "MultiBarplotDatasetVisualizer",
     "FeatureRangeDatasetMultiSamplesVisualizer",
     "ContourHeatmapGridDatasetVisualizer",
-    "MultiLineGridDatasetVisualizer"
+    "MultiLineGridDatasetVisualizer",
+    "MassingContextSplitVisualizer",
+    "RegionMetricMapVisualizer",
+    "MassingSimilarityHeatmapVisualizer"
 ]
 
 _LAZY_IMPORTS = {
@@ -37,7 +40,10 @@ _LAZY_IMPORTS = {
     "MultiBarplotDatasetVisualizer": (".multi_barplot_dataset_visualizer", "MultiBarplotDatasetVisualizer"),
     "FeatureRangeDatasetMultiSamplesVisualizer": (".feature_range_dataset_multi_samples_visualizer", "FeatureRangeDatasetMultiSamplesVisualizer"),
     "ContourHeatmapGridDatasetVisualizer": (".contour_heatmap_grid_dataset_visualizer", "ContourHeatmapGridDatasetVisualizer"),
-    "MultiLineGridDatasetVisualizer": (".multi_line_grid_dataset_visualizer", "MultiLineGridDatasetVisualizer")
+    "MultiLineGridDatasetVisualizer": (".multi_line_grid_dataset_visualizer", "MultiLineGridDatasetVisualizer"),
+    "MassingContextSplitVisualizer": (".massing_context_split_visualizer", "MassingContextSplitVisualizer"),
+    "RegionMetricMapVisualizer": (".region_metric_map_visualizer", "RegionMetricMapVisualizer"),
+    "MassingSimilarityHeatmapVisualizer": (".massing_similarity_heatmap_visualizer", "MassingSimilarityHeatmapVisualizer")
 }
 
 def __getattr__(name: str):

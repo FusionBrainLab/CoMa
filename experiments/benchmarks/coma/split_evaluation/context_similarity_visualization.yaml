@@ -1,0 +1,83 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/computed_test
+  visualizations: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkTreeDatasetLoader
+          folder_path: ${paths.test}
+          name_pattern: "*.json"
+          path_feature: inference_path
+          num_workers: 32
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.RegexColumnFilter
+              col: inference_path
+              pattern: "(?:^|/)1d(?:2|4|6|8|10)_"
+            - _target_: src.dataset_processor.IdRowMeanMerger
+              id_col: id
+              mean_cols:
+                - context_individual_exposure
+                - context_coexposure
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: computed_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.RegionMetricMapVisualizer
+          dataset_key: computed_dataset
+          polygon_col: site_contour
+          base_point_col: base_point
+          metric_col: context_individual_exposure
+          color_scale: Viridis
+          colorbar_title: Individual exposure
+          value_range: [0, 1]
+          window_size: [4096, 4096]
+          map_type: open-street-map
+          from_crs: EPSG:3857
+          zoom_level: 17
+          render_timeout: 600
+        path: ${paths.visualizations}/context_individual_exposure.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.save_visualizer.SaveImageVisualizer
+        image_visualizer:
+          _target_: src.image_data_visualizer.RegionMetricMapVisualizer
+          dataset_key: computed_dataset
+          polygon_col: site_contour
+          base_point_col: base_point
+          metric_col: context_coexposure
+          color_scale: Viridis
+          colorbar_title: Coexposure
+          value_range: [0, 1]
+          window_size: [4096, 4096]
+          map_type: open-street-map
+          from_crs: EPSG:3857
+          zoom_level: 17
+          render_timeout: 600
+        path: ${paths.visualizations}/context_coexposure.png
+      input_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: data

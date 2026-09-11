@@ -1,0 +1,46 @@
+defaults:
+  - override /hydra/job_logging: disabled
+  - override /hydra/hydra_logging: disabled
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+paths:
+  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/test
+  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/merged_test
+
+method:
+  _target_: src.core.function_utils.FunctionGraph
+  _convert_: all
+  functions:
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_creator.PreprocessDatasetCreator
+        base_creator:
+          _target_: src.dataset_creator.InversedJsonChunkTreeDatasetLoader
+          folder_path: ${paths.test}
+          name_pattern: "*.json"
+          path_feature: inference_path
+          num_workers: 1
+        preprocessor:
+          _target_: src.dataset_processor.CompositionProcessor
+          base_processors:
+            - _target_: src.dataset_processor.IdRowListMerger
+              id_col: id
+              list_cols: [sampled_context_ids]
+            - _target_: src.dataset_processor.ColumnDrop
+              cols: [inference_path]
+      output_parser:
+        _target_: src.core.parsers.AnyToDictParser
+        key: merged_dataset
+    - _target_: src.core.function_utils.FunctionWrapper
+      function:
+        _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
+        folder_path: ${paths.output}
+        chunk_length: 10000
+      input_parser:
+        _target_: src.core.parsers.DictToDictParser
+        keys_mapping: {dataset: merged_dataset}

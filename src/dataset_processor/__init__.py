@@ -29,6 +29,11 @@ __all__ = [
     "SqueezeFeatureCreator",
     "UnsqueezeFeatureCreator",
     "MetricFeatureComputeProcessor",
+    "IdRowListMerger",
+    "MassingContextSimilarityComputer",
+    "IdRowMeanMerger",
+    "RegexColumnFilter",
+    "ColumnLeft"
 ]
 
 _LAZY_IMPORTS = {
@@ -62,6 +67,11 @@ _LAZY_IMPORTS = {
     "SqueezeFeatureCreator": (".squeeze_feature_creator", "SqueezeFeatureCreator"),
     "UnsqueezeFeatureCreator": (".unsqueeze_feature_creator", "UnsqueezeFeatureCreator"),
     "MetricFeatureComputeProcessor": (".metric_feature_compute_processor", "MetricFeatureComputeProcessor"),
+    "IdRowListMerger": (".id_row_list_merger", "IdRowListMerger"),
+    "MassingContextSimilarityComputer": (".massing_context_similarity_computer", "MassingContextSimilarityComputer"),
+    "IdRowMeanMerger": (".id_row_mean_merger", "IdRowMeanMerger"),
+    "RegexColumnFilter": (".regex_column_filter", "RegexColumnFilter"),
+    "ColumnLeft": (".column_left", "ColumnLeft"),
 }
 
 def __getattr__(name: str):
