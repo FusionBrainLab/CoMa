@@ -1,5 +1,6 @@
 
 import os
+from pathlib import Path
 
 from mls.manager.job.utils import training_job_api_from_profile
 
@@ -8,8 +9,12 @@ if __name__ == "__main__":
     client, extra_options = training_job_api_from_profile('default')
 
     workdir = os.getcwd()
-
-    author_name = 'maslov'
+    repo_root = os.environ.get(
+        "REPO_ROOT",
+        str(Path(__file__).resolve().parents[4]),
+    )
+    python_bin = os.environ.get("PYTHON_BIN", "python")
+    hf_home = os.environ.get("HF_HOME", os.path.join(repo_root, ".cache/huggingface"))
 
     dims = {
         "context_1d_count": [0, 2, 4, 6, 8, 10],
@@ -60,8 +65,13 @@ if __name__ == "__main__":
     descriptions = []
     for key in runs.keys():
         for run in runs[key]:
-            base_command = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_inference/bin/python /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/hydra_batch_run.py --base_config /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/configs/base.yaml"
-            batch_config = f"--batch_config /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/configs/batch_{key}.yaml"
+            base_command = (
+                f"{python_bin} {repo_root}/hydra_batch_run.py "
+                f"--base_config {repo_root}/experiments/benchmarks/coma/methods_validation/configs/base.yaml"
+            )
+            batch_config = (
+                f"--batch_config {repo_root}/experiments/benchmarks/coma/methods_validation/configs/batch_{key}.yaml"
+            )
             args = []
             models = key.split("_")
             for model in models:
@@ -76,7 +86,8 @@ if __name__ == "__main__":
                 'script': command,
                 'job_desc': description,
                 'env_variables': {
-                    'HF_HOME': "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/transformers_cache",
+                    'HF_HOME': hf_home,
+                    'REPO_ROOT': repo_root,
                 },
                 'instance_type': 'a100plus.1gpu.80vG.12C.182G',
                 'region': extra_options['region'],

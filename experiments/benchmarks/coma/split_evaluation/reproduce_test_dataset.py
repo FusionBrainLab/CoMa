@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from tqdm import tqdm
 
@@ -44,15 +45,15 @@ if __name__ == "__main__":
                     "context_3d_count": context_3d_count,
                 })
 
-    base_path = (
-        "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/"
-        "maslov/massing_generation_coma"
+    base_path = os.environ.get(
+        "REPO_ROOT",
+        str(Path(__file__).resolve().parents[4]),
     )
     config_path = (
         f"{base_path}/experiments/benchmarks/coma/split_evaluation/"
         "reproduce_test_dataset.yaml"
     )
-    env = {**os.environ, "HYDRA_FULL_ERROR": "1"}
+    env = {**os.environ, "HYDRA_FULL_ERROR": "1", "REPO_ROOT": base_path}
     for run in tqdm(runs):
         for model_size in [2, 4, 8]:
             args = [

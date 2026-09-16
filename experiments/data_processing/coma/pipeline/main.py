@@ -2,6 +2,7 @@ import json
 import math
 import os
 from copy import deepcopy
+from pathlib import Path
 
 import pandas as pd
 import geopandas as gpd
@@ -21,7 +22,11 @@ import torch
 from PIL import Image
 
 import sys
-sys.path.append("/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation")
+REPO_ROOT = os.environ.get(
+    "REPO_ROOT",
+    str(Path(__file__).resolve().parents[4]),
+)
+sys.path.append(REPO_ROOT)
 from src.interpretable_function import InterpretableFunction
 from src.core.function_utils import FunctionWrapper, FunctionGraph
 from src.core.parsers import (
@@ -62,7 +67,7 @@ def main():
     print("----------CREATE BUILDINGS----------")
 
     buildings_creator = CoMaBuildingsCreator(
-        footprints_dataset_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/raw_data/melbourne_data/2023-building-footprints.csv",
+        footprints_dataset_path=f"{REPO_ROOT}/experiments/data_processing/raw_data/melbourne_data/2023-building-footprints.csv",
         building_id_col="structure_id",
         time_col="date_captured"
     )
@@ -72,7 +77,7 @@ def main():
     print("----------CREATE SITES----------")
 
     regions_creator = CoMaRegionsCreator(
-        properties_dataset_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/raw_data/melbourne_data/property-boundaries.csv",
+        properties_dataset_path=f"{REPO_ROOT}/experiments/data_processing/raw_data/melbourne_data/property-boundaries.csv",
         id_col="Gis_ID",
         output_col="site_contour"
     )
@@ -86,7 +91,7 @@ def main():
         regions_dataset_key="regions",
         buildings_col="building",
         regions_col="site_contour",
-        metadata_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/raw_data/melbourne_data/buildings-with-name-age-size-accessibility-and-bicycle-facilities.csv",
+        metadata_path=f"{REPO_ROOT}/experiments/data_processing/raw_data/melbourne_data/buildings-with-name-age-size-accessibility-and-bicycle-facilities.csv",
         metadata_property_col="Property ID",
         metadata_time_col="Census year",
         metadata_feature_cols=["Predominant space use"],
@@ -99,7 +104,7 @@ def main():
     massings = massings_creator(datasets={"buildings":buildings, "regions":regions})
 
     pd_massings = pd.DataFrame(massings)
-    base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images"
+    base_folder = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images"
     def filter_dataset(row):
         if not os.path.exists(os.path.join(base_folder, "mesh_images", row["id"])):
             return False
@@ -110,21 +115,21 @@ def main():
     massings = pd_massings.to_dict("list")
 
     saver = InversedJsonChunkDatasetSaver(
-        folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
+        folder_path=f"{REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
         chunk_length=10000
     )
     saver(dataset=massings)
     return"""
 
     loader = InversedJsonChunkDatasetLoader(
-        folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
+        folder_path=f"{REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
         name_pattern=".*",
         verbose=True
     )
     massings = loader()
 
     pd_massings = pd.DataFrame(massings)
-    base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images"
+    base_folder = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images"
     def filter_dataset(row):
         if not os.path.exists(os.path.join(base_folder, "mesh_images", row["id"])):
             return False
@@ -135,7 +140,7 @@ def main():
     massings = pd_massings.to_dict("list")
 
     saver = InversedJsonChunkDatasetSaver(
-        folder_path="/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings",
+        folder_path=f"{REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
         chunk_length=10000
     )
     saver(dataset=massings)
@@ -217,7 +222,7 @@ def main():
             return
 
         angles = [0, 45, 90, 135, 180, 225, 270, 315]
-        base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/mesh_images"
+        base_folder = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/mesh_images"
         os.makedirs(os.path.join(base_folder, row["id"]), exist_ok=True)
         for angle in angles:
             visualizer = FocusMeshVisualizer(
@@ -236,7 +241,7 @@ def main():
 
     def get_map_images(row):
         try:
-            base_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/map_images"
+            base_folder = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/map_images"
             path = os.path.join(base_folder, f"{row['id']}.png")
 
             if os.path.exists(path):
@@ -276,8 +281,8 @@ def main():
         "height": 768,
         "width": 768
     }
-    base_image_path = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/mesh_images"
-    output_image_path = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/render_images"
+    base_image_path = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/mesh_images"
+    output_image_path = f"{REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/render_images"
 
     def get_render_images(row):
         local_base_path = os.path.join(base_image_path, row["id"])

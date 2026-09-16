@@ -21,7 +21,7 @@ context_2d_count: 1
 context_3d_count: 8
 
 paths:
-  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  base: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}
   ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
   submits: ${paths.base}/experiments/benchmarks/coma/methods_validation
   results: ${paths.base}/experiments/benchmarks/coma/results_no_orientation

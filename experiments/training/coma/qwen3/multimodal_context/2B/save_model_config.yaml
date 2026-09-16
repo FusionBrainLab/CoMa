@@ -20,14 +20,14 @@ method:
           model_cls: "Qwen3VLForConditionalGeneration"
           model_args:
             pretrained_model_name_or_path: "Qwen/Qwen3-VL-2B-Instruct"
-        adapters_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/multimodal_context/2B/checkpoints/checkpoint-1000"
+        adapters_path: "${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/multimodal_context/2B/checkpoints/checkpoint-1000"
       output_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: "model"
     - _target_: src.core.function_utils.FunctionWrapper
       function:
         _target_: src.model_handler.HFModelSaver
-        path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/multimodal_context/2B/merged_model"
+        path: "${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/multimodal_context/2B/merged_model"
       input_parser:
         _target_: src.core.parsers.DictToDictParser
         keys_mapping: {"model": "model"}

@@ -15,5 +15,5 @@ hydra:
     dir: .
 
 training:
-  output_dir: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/unimodal_context/2B/checkpoints"
-  logging_dir: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/unimodal_context/2B/logs"
+  output_dir: "${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/unimodal_context/2B/checkpoints"
+  logging_dir: "${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/unimodal_context/2B/logs"

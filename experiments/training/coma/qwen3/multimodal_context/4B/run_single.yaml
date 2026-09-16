@@ -5,18 +5,19 @@
 # 📚 Документация по запуску задач: https://fbdocs.website.yandexcloud.net/pages/mlspace/jobs/quick_start.html
 
 job:
-  description: "#evgmaslov #coma #multimodal_context #4B"
+  description: "#coma #multimodal_context #4B"
   environment:
     image: cr.ai.cloud.ru/aicloud-base-images/py3.12-torch2.7.0:0.0.41
     variables:
-      HF_HOME: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/transformers_cache"
-      CUDA_HOME: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/massing_generation"
+      HF_HOME: "${HF_HOME}"
+      CUDA_HOME: "${CUDA_HOME}"
+      REPO_ROOT: "${REPO_ROOT}"
   resource:
     instance_type: a100plus.1gpu.80vG.12C.182G
     # processes: - # Сколько процессов запускать. По умолчанию запускается по количеству GPU на одном воркере - это подходит для torchrun.
     processes: 1 # Для работы с accelerate нужно запускать 1 процесс на 1 воркер.
     workers: 1   # Сколько запускать воркеров запускать
-  script: '/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/massing_generation/bin/python /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/hydra_run.py --config_path /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/multimodal_context/4B/config_single.yaml'
+  script: '${PYTHON_BIN:-python} ${REPO_ROOT}/hydra_run.py --config_path ${REPO_ROOT}/experiments/training/coma/qwen3/multimodal_context/4B/config_single.yaml'
   type: binary
 
 

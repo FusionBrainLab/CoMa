@@ -1,21 +1,11 @@
 __all__ = [
-    "ImagesParser",
     "MemoryToDictParser",
-    "MessagesMerger",
-    "TextMessagesParser",
     "ProcessorVLLMInputCreator",
-    "ResizeImagesParser",
-    "DictMessagesCreator"
 ]
 
 _LAZY_IMPORTS = {
-    "ImagesParser": (".images_parser", "ImagesParser"),
     "MemoryToDictParser": (".memory_to_dict_parser", "MemoryToDictParser"),
-    "MessagesMerger": (".messages_merger", "MessagesMerger"),
-    "TextMessagesParser": (".text_messages_parser", "TextMessagesParser"),
     "ProcessorVLLMInputCreator": (".processor_vllm_input_creator", "ProcessorVLLMInputCreator"),
-    "ResizeImagesParser": (".resize_images_parser", "ResizeImagesParser"),
-    "DictMessagesCreator": (".dict_messages_creator", "DictMessagesCreator")
 }
 
 def __getattr__(name: str):

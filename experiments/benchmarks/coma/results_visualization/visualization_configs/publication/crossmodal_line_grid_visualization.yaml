@@ -22,7 +22,7 @@ method:
         _target_: src.dataset_creator.PreprocessDatasetCreator
         base_creator:
           _target_: src.dataset_creator.ValidationResultsLoader
-          results_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results
+          results_folder: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/benchmarks/coma/results
           submit_name_to_dict_deserializer:
             _target_: src.string_deserializer.RegexArgsDeserializer
             args_expressions:
@@ -121,7 +121,7 @@ method:
           max_x_ticks: 6
           max_y_ticks: 10
           integer_x_ticks: false
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results_visualization/visualizations_publication/crossmodal_line_grid
+        path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/benchmarks/coma/results_visualization/visualizations_publication/crossmodal_line_grid
         formats: ["pgf", "pdf", "png"]
         dpi: 600.0
         font_family: "sans-serif"

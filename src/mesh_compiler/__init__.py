@@ -1,16 +1,12 @@
 __all__ = [
     "MeshCompiler",
     "MassingMeshCompiler",
-    "DummyCityContextCompiler",
-    "GisCityContextCompiler",
     "MassingContextMeshCompiler"
 ]
 
 _LAZY_IMPORTS = {
     "MeshCompiler": (".mesh_compiler", "MeshCompiler"),
     "MassingMeshCompiler": (".massing_mesh_compiler", "MassingMeshCompiler"),
-    "DummyCityContextCompiler": (".dummy_city_context_compiler", "DummyCityContextCompiler"),
-    "GisCityContextCompiler": (".gis_city_context_compiler", "GisCityContextCompiler"),
     "MassingContextMeshCompiler": (".massing_context_mesh_compiler", "MassingContextMeshCompiler")
 }
 

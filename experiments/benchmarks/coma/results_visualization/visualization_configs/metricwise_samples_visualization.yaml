@@ -9,7 +9,7 @@ hydra:
     dir: .
 
 paths:
-  ctx: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings
+  ctx: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings
 
 method:
   _target_: src.core.function_utils.FunctionGraph
@@ -20,7 +20,7 @@ method:
         _target_: src.dataset_creator.PreprocessDatasetCreator
         base_creator:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/multimodal_context/8B/1d10_2d1_3d8
+          folder_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/methods_validation/multimodal_context/8B/1d10_2d1_3d8
           name_pattern: ".*"
           verbose: true
         preprocessor:
@@ -30,7 +30,7 @@ method:
               feature_metrics: 
                 contextual_relevance:
                   _target_: src.sample_metric.LearnedEnsembleMetric
-                  model_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/metrics_validation/models/learned_ensemble_catboost_all17.joblib
+                  model_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/metrics_validation/models/learned_ensemble_catboost_all17.joblib
                   feature_metrics:
                     direction_nearest:
                       _target_: src.sample_metric.MassingContextualRelevance
@@ -329,7 +329,7 @@ method:
                       _target_: src.dataset_creator.PreprocessDatasetCreator
                       base_creator:
                         _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-                        folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings
+                        folder_path: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings
                         name_pattern: ".*"
                         verbose: true
                       preprocessor:
@@ -371,8 +371,8 @@ method:
           random_seed: 80
           cell_size: 256
           dpi: 150
-          samples_folder: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples.png
+          samples_folder: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples
+        path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results_visualization/visualizations/metricwise_samples.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

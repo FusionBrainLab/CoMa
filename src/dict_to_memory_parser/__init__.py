@@ -3,7 +3,6 @@ __all__ = [
     "ContentChainDTMParser",
     "ConcatDTMParser",
     "EmptyColAdaptiveDTMParser",
-    "MessagesDTMParser",
     "MultiColContentChainDTMParser"
 ]
 
@@ -12,7 +11,6 @@ _LAZY_IMPORTS = {
     "ContentChainDTMParser": (".content_chain_dtm_parser", "ContentChainDTMParser"),
     "ConcatDTMParser": (".concat_dtm_parser", "ConcatDTMParser"),
     "EmptyColAdaptiveDTMParser": (".empty_col_adaptive_dtm_parser", "EmptyColAdaptiveDTMParser"),
-    "MessagesDTMParser": (".messages_dtm_parser", "MessagesDTMParser"),
     "MultiColContentChainDTMParser": (".multi_col_content_chain_dtm_parser", "MultiColContentChainDTMParser")
 }
 

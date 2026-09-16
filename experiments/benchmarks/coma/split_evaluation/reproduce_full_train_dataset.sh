@@ -1,2 +1,6 @@
-HYDRA_FULL_ERROR=1 python /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/hydra_run.py \
---config_path /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduce_full_train_dataset.yaml
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+export REPO_ROOT
+
+HYDRA_FULL_ERROR=1 python "$REPO_ROOT/hydra_run.py" \
+--config_path "$REPO_ROOT/experiments/benchmarks/coma/split_evaluation/reproduce_full_train_dataset.yaml"

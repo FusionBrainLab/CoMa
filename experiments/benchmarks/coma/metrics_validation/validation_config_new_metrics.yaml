@@ -14,7 +14,7 @@ method:
   submit_loaders:
     negative_sampling_testset:
       _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/metrics_validation/dataset
+      folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/benchmarks/coma/metrics_validation/dataset
       name_pattern: .*
       verbose: true
   metrics:
@@ -27,7 +27,7 @@ method:
         id_key: id
         context_dataset_loader:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/data_processing/coma/dataset/massings
           name_pattern: .*
           verbose: false
       gt_label_key: label
@@ -48,7 +48,7 @@ method:
         id_key: id
         context_dataset_loader:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/data_processing/coma/dataset/massings
           name_pattern: .*
           verbose: false
         reduction: nearest
@@ -86,7 +86,7 @@ method:
         id_key: id
         context_dataset_loader:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/data_processing/coma/dataset/massings
           name_pattern: .*
           verbose: false
         reduction: nearest
@@ -103,7 +103,7 @@ method:
         id_key: id
         context_dataset_loader:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/data_processing/coma/dataset/massings
           name_pattern: .*
           verbose: false
         reduction: mahalanobis
@@ -120,7 +120,7 @@ method:
         id_key: id
         context_dataset_loader:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/data_processing/coma/dataset/massings
+          folder_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/data_processing/coma/dataset/massings
           name_pattern: .*
           verbose: false
         reduction: mean
@@ -141,4 +141,4 @@ method:
   - _target_: src.validator.EvalConfig
     method_name: negative_sampling_testset
     metric_name: MultiFeature_DirFarCovHeight__mean
-  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/metrics_validation/result_combinations.json
+  result_storage_path: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}/experiments/benchmarks/coma/metrics_validation/result_combinations.json

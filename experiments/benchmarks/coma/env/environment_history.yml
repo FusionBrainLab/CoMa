@@ -1,5 +1,4 @@
-name: 
-  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation
+name: coma_validation
 channels:
   - conda-forge
   - defaults
@@ -16,5 +15,3 @@ dependencies:
   - shapely
   - trimesh
   - mapbox_earcut
-prefix: 
-  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation

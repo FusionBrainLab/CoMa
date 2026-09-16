@@ -12,9 +12,9 @@ validation_type: lower
 metric_name: Contextual relevance change
 
 paths:
-  full_results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/results
-  subset_results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_results/${validation_type}_results
-  visualizations: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations
+  full_results: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results
+  subset_results: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_results/${validation_type}_results
+  visualizations: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/visualizations
 
 result_deserializer:
   _target_: src.string_deserializer.RegexArgsDeserializer

@@ -22,7 +22,7 @@ method:
     _target_: src.dataset_creator.PreprocessDatasetCreator
     base_creator:
       _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-      folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/splits/test"
+      folder_path: "${oc.env:REPO_ROOT}/experiments/data_processing/coma/splits/test"
       name_pattern: ".*"
       verbose: true
     preprocessor:
@@ -30,9 +30,9 @@ method:
       base_processors:
         - _target_: src.dataset_processor.MassingContextConverter
           multi_image_col_to_folder:
-            "3d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/mesh_images"
+            "3d_context": "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/mesh_images"
           single_image_col_to_folder:
-            "2d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/map_images"
+            "2d_context": "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/map_images"
           context_ids_col: "context_ids_100"
           json_context_col: "1d_context"
           massing_col: "massing"
@@ -44,7 +44,7 @@ method:
           random_seed: 42
           context_dataset_loader:
             _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-            folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings"
+            folder_path: "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings"
             name_pattern: ".*"
             verbose: true
         - _target_: src.dataset_processor.JsonStringDumper
@@ -277,7 +277,7 @@ method:
           function:
             _target_: src.vllm_inference.vLLMInference
             init_params:
-              model: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/training/coma/qwen3/${train_type}/${model_size}B/merged_model"
+              model: "${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/${train_type}/${model_size}B/merged_model"
               tokenizer: "Qwen/Qwen3-VL-${model_size}B-Instruct"
               gpu_memory_utilization: ${gpu_memory_utilization}
               max_model_len: 32000
@@ -323,7 +323,7 @@ method:
     _target_: src.dataset_handler.PreprocessDatasetHandler
     base_handler:
       _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
-      folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}"
+      folder_path: "${oc.env:REPO_ROOT}/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}"
       chunk_length: 10000
     preprocessor:
       _target_: src.dataset_processor.CompositionProcessor

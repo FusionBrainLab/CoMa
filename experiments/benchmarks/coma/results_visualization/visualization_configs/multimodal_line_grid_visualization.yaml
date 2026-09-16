@@ -14,8 +14,8 @@ hydra:
     max_batch_size: 1
   
 paths:
-  results: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results
-  image: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_line_grid.png
+  results: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results
+  image: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results_visualization/visualizations/multimodal_line_grid.png
 
 method:
   _target_: src.core.function_utils.FunctionGraph

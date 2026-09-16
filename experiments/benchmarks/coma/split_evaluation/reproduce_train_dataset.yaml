@@ -8,16 +8,16 @@ defaults:
 
 hydra:
   searchpath:
-    - file:///mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/training/coma/qwen3/configs
+    - file://${oc.env:REPO_ROOT}/experiments/training/coma/qwen3/configs
   output_subdir: null
   run:
     dir: .
 
 paths:
-  train: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/splits/train
-  mesh_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/mesh_images
-  map_images: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/data_processing/coma/dataset/context_images/map_images
-  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train
+  train: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/splits/train
+  mesh_images: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/mesh_images
+  map_images: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/map_images
+  output: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train
 
 method:
   _target_: src.core.function_utils.FunctionGraph

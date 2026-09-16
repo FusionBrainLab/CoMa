@@ -19,12 +19,12 @@ method:
           _target_: src.image_data_visualizer.MassingContextSplitVisualizer
           train_dataset_loader:
             _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-            folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train/multimodal_context
+            folder_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/train/multimodal_context
             name_pattern: ".*"
             verbose: true
           test_dataset_loader:
             _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-            folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/merged_test
+            folder_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/merged_test
             name_pattern: ".*"
             verbose: true
           id_col: id
@@ -42,7 +42,7 @@ method:
           from_crs: EPSG:3857
           zoom_level: 17
           render_timeout: 600
-        path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/visualizations/split_visualization.png
+        path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/visualizations/split_visualization.png
       input_parser:
         _target_: src.core.parsers.AnyToDictParser
         key: data

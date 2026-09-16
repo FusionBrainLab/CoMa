@@ -1,17 +1,11 @@
 __all__ = [
     "SaveVisualizer",
-    "FocusMeshHtmlVisualizer",
-    "KeplerglPolygonsHtmlVisualizer",
-    "KeplerglMultiPolygonsHtmlVisualizer",
     "SaveImageVisualizer",
     "SaveFigureVisualizer"
 ]
 
 _LAZY_IMPORTS = {
     "SaveVisualizer": (".save_visualizer", "SaveVisualizer"),
-    "FocusMeshHtmlVisualizer": (".focus_mesh_html_visualizer", "FocusMeshHtmlVisualizer"),
-    "KeplerglPolygonsHtmlVisualizer": (".keplergl_polygons_html_visualizer", "KeplerglPolygonsHtmlVisualizer"),
-    "KeplerglMultiPolygonsHtmlVisualizer": (".keplergl_multi_polygons_html_visualizer", "KeplerglMultiPolygonsHtmlVisualizer"),
     "SaveImageVisualizer": (".save_image_visualizer", "SaveImageVisualizer"),
     "SaveFigureVisualizer": (".save_figure_visualizer", "SaveFigureVisualizer"),
 }

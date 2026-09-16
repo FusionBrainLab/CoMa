@@ -3,7 +3,7 @@
     "submit_loaders":{
         "negative_sampling_testset":{
             "type":"InversedJsonChunkDatasetLoader",
-            "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/benchmarks/coma/metrics_validation/dataset",
+            "folder_path":"${oc.env:REPO_ROOT}/experiments/benchmarks/coma/metrics_validation/dataset",
             "name_pattern":".*",
             "verbose": true
         }
@@ -31,7 +31,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -55,7 +55,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -79,7 +79,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -102,7 +102,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -125,7 +125,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -148,7 +148,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -172,7 +172,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -195,7 +195,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -219,7 +219,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -241,7 +241,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -263,7 +263,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -285,7 +285,7 @@
                 "id_key":"id",
                 "context_dataset_loader":{
                     "type":"InversedJsonChunkDatasetLoader",
-                    "folder_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/data_processing/coma/dataset/massings",
+                    "folder_path":"${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings",
                     "name_pattern":".*",
                     "verbose": true
                 },
@@ -356,5 +356,5 @@
             "metric_name":"StepbackRatioMatch"
         }
     ],
-    "result_storage_path":"/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_validate_metrics/experiments/benchmarks/coma/metrics_validation/result.json"
+    "result_storage_path":"${oc.env:REPO_ROOT}/experiments/benchmarks/coma/metrics_validation/result.json"
 }

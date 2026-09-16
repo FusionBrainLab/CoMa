@@ -1,2 +1,7 @@
-PATH=/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/mathemage/.local/bin:$PATH HYDRA_FULL_ERROR=1 python /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/hydra_run.py \
---config_path /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric/experiments/benchmarks/coma/results_visualization/visualization_configs/publication/multimodal_contour_grid_visualization.yaml
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../../.." && pwd)"
+export REPO_ROOT
+export MASSING_METRIC_ROOT="${MASSING_METRIC_ROOT:-$REPO_ROOT}"
+
+HYDRA_FULL_ERROR=1 python "$MASSING_METRIC_ROOT/hydra_run.py" \
+--config_path "$MASSING_METRIC_ROOT/experiments/benchmarks/coma/results_visualization/visualization_configs/publication/multimodal_contour_grid_visualization.yaml"

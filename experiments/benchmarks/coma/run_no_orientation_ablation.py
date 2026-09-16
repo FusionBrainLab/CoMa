@@ -26,7 +26,7 @@ VIS_SCRIPT = COMA / "results_visualization" / "scripts" / "publication" / "no_or
 
 def run(command: list[str]) -> None:
     print("+ " + " ".join(command), flush=True)
-    subprocess.run(command, check=True, cwd=ROOT, env={**os.environ, "HYDRA_FULL_ERROR": "1"})
+    subprocess.run(command, check=True, cwd=ROOT, env={**os.environ, "HYDRA_FULL_ERROR": "1", "REPO_ROOT": str(ROOT)})
 
 
 def hydra(config: Path, *overrides: str) -> None:

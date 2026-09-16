@@ -9,9 +9,9 @@ hydra:
     dir: .
 
 paths:
-  train: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/full_train
-  test: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/test
-  output: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/computed_test
+  train: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/full_train
+  test: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/test
+  output: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/split_evaluation/reproduced_dataset/computed_test
 
 method:
   _target_: src.core.function_utils.FunctionGraph

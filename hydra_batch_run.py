@@ -58,6 +58,8 @@ def main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
+    os.environ.setdefault("REPO_ROOT", str(SCRIPT_DIR))
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--base_config", required=True, type=str)
     parser.add_argument("--batch_config", required=True, type=str)

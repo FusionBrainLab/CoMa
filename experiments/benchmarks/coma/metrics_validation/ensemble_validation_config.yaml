@@ -10,7 +10,7 @@ hydra:
     dir: .
 
 paths:
-  base: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+  base: ${oc.env:MASSING_METRIC_ROOT,${oc.env:REPO_ROOT}}
   ctx: ${paths.base}/experiments/data_processing/coma/dataset/massings
   val: ${paths.base}/experiments/benchmarks/coma/metrics_validation/dataset
   results: ${paths.base}/experiments/benchmarks/coma/metrics_validation/results

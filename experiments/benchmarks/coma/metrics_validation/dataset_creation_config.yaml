@@ -15,7 +15,7 @@ method:
     - _target_: src.core.function_utils.FunctionWrapper
       function:
         _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-        folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings"
+        folder_path: "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings"
         name_pattern: ".*"
         verbose: true
       output_parser:
@@ -35,7 +35,7 @@ method:
     - _target_: src.core.function_utils.FunctionWrapper
       function:
         _target_: src.dataset_handler.InversedJsonChunkDatasetSaver
-        folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma_metrics_validation/experiments/benchmarks/coma/metrics_validation/dataset"
+        folder_path: "${oc.env:REPO_ROOT}/experiments/benchmarks/coma/metrics_validation/dataset"
         chunk_length: 10000
       input_parser:
         _target_: src.core.parsers.DictToDictParser

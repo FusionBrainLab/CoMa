@@ -1,10 +1,18 @@
 import os
 import json
+from pathlib import Path
 
 from tqdm import tqdm
 
 def main():
-    results_folder = "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation_coma/experiments/benchmarks/coma/split_evaluation/reproduced_results/upper_results"
+    repo_root = os.environ.get(
+        "REPO_ROOT",
+        str(Path(__file__).resolve().parents[3]),
+    )
+    results_folder = os.path.join(
+        repo_root,
+        "experiments/benchmarks/coma/split_evaluation/reproduced_results/upper_results",
+    )
     for name in tqdm(os.listdir(results_folder)):
         path = os.path.join(results_folder, name)
         with open(path, "r") as f:

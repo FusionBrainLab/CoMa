@@ -20,7 +20,7 @@ context_2d_count: 1
 context_3d_count: 8
 
 paths:
-  ctx: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/massings
+  ctx: ${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/massings
   
 method:
   _target_: src.validator.Validator
@@ -28,7 +28,7 @@ method:
   submit_loaders:
     submit:
       _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-      folder_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
+      folder_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/methods_validation/${train_type}/${model_size}B/1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}
       name_pattern: ".*"
       verbose: true
   metrics:
@@ -36,7 +36,7 @@ method:
       _target_: src.metric.SafeIgnoreSampleMerging
       sample_metric:
         _target_: src.sample_metric.LearnedEnsembleMetric
-        model_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/metrics_validation/models/learned_ensemble_catboost_all17.joblib
+        model_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/metrics_validation/models/learned_ensemble_catboost_all17.joblib
         feature_metrics:
           direction_nearest:
             _target_: src.sample_metric.MassingContextualRelevance
@@ -313,5 +313,5 @@ method:
   submits_to_metrics:
     submit:
       - contextual_relevance
-  result_storage_path: /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/benchmarks/coma/results/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json
+  result_storage_path: ${oc.env:REPO_ROOT}/experiments/benchmarks/coma/results/train-${train_type}_model-${model_size}B_1d${context_1d_count}_2d${context_2d_count}_3d${context_3d_count}.json
     

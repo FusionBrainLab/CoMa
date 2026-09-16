@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pandas as pd
 
@@ -7,10 +8,13 @@ from src.dataset_handler import InversedJsonChunkTreeDatasetSaver
 
 
 if __name__ == "__main__":
-    base_path = (
-        "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/"
-        "massing_generation_coma/experiments/benchmarks/coma/split_evaluation/"
-        "reproduced_dataset"
+    repo_root = os.environ.get(
+        "REPO_ROOT",
+        str(Path(__file__).resolve().parents[4]),
+    )
+    base_path = os.path.join(
+        repo_root,
+        "experiments/benchmarks/coma/split_evaluation/reproduced_dataset",
     )
     path_feature = "inference_path"
     dataset = InversedJsonChunkTreeDatasetLoader(

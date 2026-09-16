@@ -13,6 +13,8 @@ def main(cfg: DictConfig):
     method()
 
 if __name__ == "__main__":
+    os.environ.setdefault("REPO_ROOT", str(Path(__file__).resolve().parent))
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_path", required=True, type=str)
     args, hydra_args = parser.parse_known_args()

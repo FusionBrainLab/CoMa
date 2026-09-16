@@ -17,7 +17,7 @@ method:
         _target_: src.dataset_creator.PreprocessDatasetCreator
         base_creator:
           _target_: src.dataset_creator.InversedJsonChunkDatasetLoader
-          folder_path: "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/splits/train"
+          folder_path: "${oc.env:REPO_ROOT}/experiments/data_processing/coma/splits/train"
           name_pattern: ".*"
           verbose: true
         preprocessor:

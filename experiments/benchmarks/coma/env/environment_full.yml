@@ -1,5 +1,4 @@
-name: 
-  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation
+name: coma_validation
 channels:
   - conda-forge
   - defaults
@@ -203,5 +202,3 @@ dependencies:
       - wrapt==2.2.1
       - yarl==1.24.2
       - zc-lockfile==4.0
-prefix: 
-  /mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/envs/coma_validation

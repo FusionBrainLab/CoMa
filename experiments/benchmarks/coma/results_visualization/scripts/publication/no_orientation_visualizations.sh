@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT=/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/sshk/massing-metric
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../../.." && pwd)"
+export REPO_ROOT
+ROOT="${MASSING_METRIC_ROOT:-$REPO_ROOT}"
 RESULTS=${ROOT}/experiments/benchmarks/coma/results_no_orientation
 OUT=${ROOT}/experiments/benchmarks/coma/results_visualization/visualizations_publication_no_orientation
 
 COMMON=(
   env
   HYDRA_FULL_ERROR=1
-  /home/jovyan/.mlspace/envs/massing/bin/python "${ROOT}/hydra_run.py"
+  python "${ROOT}/hydra_run.py"
 )
 
 "${COMMON[@]}" \

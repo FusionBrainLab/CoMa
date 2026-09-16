@@ -1,8 +1,8 @@
 _target_: src.dataset_processor.MassingContextSampler
 multi_image_col_to_folder:
-  "3d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/mesh_images"
+  "3d_context": "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/mesh_images"
 single_image_col_to_folder:
-  "2d_context": "/mnt/virtual_ai0001071-04017_SR004-nfs1/CFS-SR008/workspace/maslov/massing_generation/experiments/data_processing/coma/dataset/context_images/map_images"
+  "2d_context": "${oc.env:REPO_ROOT}/experiments/data_processing/coma/dataset/context_images/map_images"
 context_ids_col: "context_ids_100"
 json_context_col: "1d_context"
 massing_col: "massing"
